@@ -1,0 +1,13 @@
+class Functor f where
+  fmap :: F (F a b) (F (f a) (f b))
+
+data List a where
+  Nil :: List a
+  Cons :: F a (F (List a) (List a))
+
+instance Functor (List) where
+  fmap f (Cons x xs) = Cons (f x) (fmap f xs)
+  fmap _ (Nil) = Nil
+
+main = print (fmap (plus 5) (Cons 1 (Cons 2 (Cons 3 Nil))))
+

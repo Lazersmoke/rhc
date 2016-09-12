@@ -1,0 +1,1050 @@
+
+==================== FINAL INTERFACE ====================
+2016-09-08 02:05:59.591399 UTC
+
+interface rhc_4UdgedzKNYE9AqQPwVdRhS:Lib 7103
+  interface hash: eae86957acc6fc4b86ad0b8ec540ffee
+  ABI hash: 285e269721f2bcea06066a0df05141bc
+  export-list hash: a682923855139f4485a5e31a7e421197
+  orphan hash: 693e9af84d3dfcc71e640e005bdc5e2e
+  flag hash: 962af636f8e927040c7daa9c21457292
+  sig of: Nothing
+  used TH splices: False
+  where
+exports:
+  Lib.functorClassTestCase
+  Lib.indent
+  Lib.parenShow
+  Lib.parens
+  Lib.showLines
+  Lib.showWords
+  Lib.showtep
+  Lib.testCase
+  Lib.testCase'
+  Lib.Context{Lib.Context}
+  Lib.ContextualAssertation{Lib.ContextualAssertation}
+  Lib.Declaration{Lib.ClassDeclaration Lib.DataTypeDeclaration Lib.InstanceDeclaration Lib.TypeSignatureDeclaration Lib.TypeSynonymDeclaration Lib.ValueDeclaration}
+  Lib.Expression{Lib.ApplicationExpression Lib.LambdaExpression Lib.LiteralExpression Lib.TypeAnnotatedExpression Lib.VariableExpression}
+  Lib.Literal{Lib.CharLiteral Lib.FracLiteral Lib.IntLiteral Lib.StringLiteral}
+  Lib.Pattern{Lib.BlackHolePattern Lib.ConstructedPattern Lib.LiteralPattern Lib.VarPattern}
+  Lib.PatternClause{Lib.PatternClause}
+  Lib.TypeExpression{Lib.ApplicationTypeExpression Lib.FunctionTypeExpression Lib.VariableTypeExpression}
+  Lib.TypeSignature{Lib.TypeSignature}
+  Lib.VarName{Lib.ProperVarName Lib.VarName}
+module dependencies:
+package dependencies: base-4.8.2.0* ghc-prim-0.4.0.0
+                      integer-gmp-1.0.0.0
+orphans: base-4.8.2.0:GHC.Base base-4.8.2.0:GHC.Float
+family instance modules: base-4.8.2.0:Control.Applicative
+                         base-4.8.2.0:Data.Either base-4.8.2.0:Data.Monoid
+                         base-4.8.2.0:Data.Type.Equality base-4.8.2.0:GHC.Generics
+import  -/  base-4.8.2.0:Data.List 3f0782c8d4bf50eecefcd5ea1798aac8
+import  -/  base-4.8.2.0:Data.OldList d8fd80b0e14aa085ce6219cd89dad356
+import  -/  base-4.8.2.0:GHC.Base 1db77db5dae73d8c424c85b09fbadb89
+import  -/  base-4.8.2.0:GHC.Show 0e1d8380a8fb0cfb07ebeda3b70cbf38
+import  -/  base-4.8.2.0:Prelude 694dcaf039efe62df1c44834e2dbd2fb
+import  -/  integer-gmp-1.0.0.0:GHC.Integer.Type 371e90fe753f08ddedf0d2657a9ef5c4
+8922d745e720ef20764882925b71cc2c
+  $fShowContext :: GHC.Show.Show Lib.Context
+  DFunId[0]
+  {- Strictness: m, Inline: [ALWAYS] CONLIKE,
+     Unfolding: DFun:.
+                  @ Lib.Context
+                  Lib.$fShowContext_$cshowsPrec
+                  Lib.$fShowContext_$cshow1
+                  Lib.$fShowContext_$cshowList -}
+29a0d8057a722598b08f7261fb9a537c
+  $fShowContext1 :: [GHC.Types.Char]
+  {- Unfolding: (GHC.CString.unpackCString# " => "#) -}
+b17511ee927138e39ae14c614fdaf7f0
+  $fShowContext2 :: [GHC.Types.Char]
+  {- Unfolding: (GHC.CString.unpackCString# ")"#) -}
+4c0b393263acd62cea9b8811f197e736
+  $fShowContext3 :: [Lib.ContextualAssertation] -> GHC.Base.String
+  {- Arity: 1, Strictness: <S,1*U>,
+     Unfolding: (\ x :: [Lib.ContextualAssertation] ->
+                 case GHC.Base.map
+                        @ Lib.ContextualAssertation
+                        @ [GHC.Types.Char]
+                        Lib.$fShowContext_$cshow
+                        x of wild {
+                   [] -> GHC.Types.[] @ GHC.Types.Char
+                   : x1 xs1
+                   -> Data.OldList.intercalate_$spoly_go
+                        @ GHC.Types.Char
+                        x1
+                        (Data.OldList.prependToAll
+                           @ [GHC.Types.Char]
+                           Lib.$fShowContext4
+                           xs1) }) -}
+53f78e9fb68eeacf9d0f58e087af4f3a
+  $fShowContext4 :: [GHC.Types.Char]
+  {- Unfolding: (GHC.CString.unpackCString# ", "#) -}
+ddba5e19248cdfb9a9bc552dae4f77de
+  $fShowContext_$cshow ::
+    Lib.ContextualAssertation -> GHC.Base.String
+  {- Arity: 1, Strictness: <S(SL),1*U(1*U,1*U)>, Inline: INLINE[0],
+     Unfolding: InlineRule (1, True, False)
+                (\ w :: Lib.ContextualAssertation ->
+                 case w of ww { Lib.ContextualAssertation ww1 ww2 ->
+                 Lib.$w$cshow ww1 ww2 }) -}
+8922d745e720ef20764882925b71cc2c
+  $fShowContext_$cshow1 :: Lib.Context -> GHC.Base.String
+  {- Arity: 1, Strictness: <S(S),1*U(1*U)>, Inline: INLINE[0],
+     Unfolding: InlineRule (1, True, False)
+                (\ w :: Lib.Context ->
+                 case w of ww { Lib.Context ww1 -> Lib.$w$cshow1 ww1 }) -}
+8922d745e720ef20764882925b71cc2c
+  $fShowContext_$cshowList :: [Lib.Context] -> GHC.Show.ShowS
+  {- Arity: 2, Strictness: <S,1*U><L,U>,
+     Unfolding: InlineRule (2, True, False)
+                (\ ls :: [Lib.Context] s :: GHC.Base.String ->
+                 GHC.Show.showList__
+                   @ Lib.Context
+                   (Lib.$fShowContext_$cshowsPrec GHC.Show.shows18)
+                   ls
+                   s) -}
+8922d745e720ef20764882925b71cc2c
+  $fShowContext_$cshowsPrec ::
+    GHC.Types.Int -> Lib.Context -> GHC.Show.ShowS
+  {- Arity: 3, Strictness: <L,A><S(S),1*U(1*U)><L,1*U>,
+     Inline: INLINE[0],
+     Unfolding: InlineRule (3, True, False)
+                (\ w :: GHC.Types.Int w1 :: Lib.Context w2 :: GHC.Base.String ->
+                 case w1 of ww { Lib.Context ww1 -> Lib.$w$cshowsPrec ww1 w2 }) -}
+add2eb27859a03a2865e560fe96f87df
+  $fShowContext_go :: [Lib.TypeExpression] -> [GHC.Types.Char]
+  {- Arity: 1, Strictness: <S,1*U> -}
+ddba5e19248cdfb9a9bc552dae4f77de
+  $fShowContextualAssertation ::
+    GHC.Show.Show Lib.ContextualAssertation
+  DFunId[0]
+  {- Strictness: m, Inline: [ALWAYS] CONLIKE,
+     Unfolding: DFun:.
+                  @ Lib.ContextualAssertation
+                  Lib.$fShowContextualAssertation_$cshowsPrec
+                  Lib.$fShowContext_$cshow
+                  Lib.$fShowContextualAssertation_$cshowList -}
+ddba5e19248cdfb9a9bc552dae4f77de
+  $fShowContextualAssertation1 ::
+    Lib.ContextualAssertation -> GHC.Base.String -> [GHC.Types.Char]
+  {- Arity: 2,
+     Unfolding: (\ x :: Lib.ContextualAssertation
+                   s :: GHC.Base.String[OneShot] ->
+                 case x of ww { Lib.ContextualAssertation ww1 ww2 ->
+                 GHC.Base.++ @ GHC.Types.Char (Lib.$w$cshow ww1 ww2) s }) -}
+ddba5e19248cdfb9a9bc552dae4f77de
+  $fShowContextualAssertation_$cshowList ::
+    [Lib.ContextualAssertation] -> GHC.Show.ShowS
+  {- Arity: 2, Strictness: <S,1*U><L,U>,
+     Unfolding: (\ ls :: [Lib.ContextualAssertation]
+                   s :: GHC.Base.String ->
+                 GHC.Show.showList__
+                   @ Lib.ContextualAssertation
+                   Lib.$fShowContextualAssertation1
+                   ls
+                   s) -}
+ddba5e19248cdfb9a9bc552dae4f77de
+  $fShowContextualAssertation_$cshowsPrec ::
+    GHC.Types.Int -> Lib.ContextualAssertation -> GHC.Show.ShowS
+  {- Arity: 3, Strictness: <L,A><S(SL),1*U(1*U,1*U)><L,1*U>,
+     Unfolding: InlineRule (3, True, False)
+                (\ ds :: GHC.Types.Int
+                   x :: Lib.ContextualAssertation
+                   s :: GHC.Base.String ->
+                 GHC.Base.augment
+                   @ GHC.Types.Char
+                   (\ @ b c :: GHC.Types.Char -> b -> b[OneShot] n :: b[OneShot] ->
+                    GHC.Base.foldr
+                      @ GHC.Types.Char
+                      @ b
+                      c
+                      n
+                      (Lib.$fShowContext_$cshow x))
+                   s) -}
+cc14382fa3ea02ab5ec87419c526feea
+  $fShowDeclaration :: GHC.Show.Show Lib.Declaration
+  DFunId[0]
+  {- Strictness: m, Inline: [ALWAYS] CONLIKE,
+     Unfolding: DFun:.
+                  @ Lib.Declaration
+                  Lib.$fShowDeclaration_$cshowsPrec
+                  Lib.$fShowDeclaration_$cshow
+                  Lib.$fShowDeclaration_$cshowList -}
+cc14382fa3ea02ab5ec87419c526feea
+  $fShowDeclaration1 ::
+    Lib.Declaration -> GHC.Base.String -> [GHC.Types.Char]
+  {- Arity: 2,
+     Unfolding: (\ x :: Lib.Declaration s :: GHC.Base.String[OneShot] ->
+                 GHC.Base.++ @ GHC.Types.Char (Lib.$fShowDeclaration_$cshow x) s) -}
+cc14382fa3ea02ab5ec87419c526feea
+  $fShowDeclaration_$cshow :: Lib.Declaration -> GHC.Base.String
+  {- Arity: 1, Strictness: <S,1*U> -}
+cc14382fa3ea02ab5ec87419c526feea
+  $fShowDeclaration_$cshowList :: [Lib.Declaration] -> GHC.Show.ShowS
+  {- Arity: 2, Strictness: <S,1*U><L,U>,
+     Unfolding: (\ ls :: [Lib.Declaration] s :: GHC.Base.String ->
+                 GHC.Show.showList__
+                   @ Lib.Declaration
+                   Lib.$fShowDeclaration1
+                   ls
+                   s) -}
+cc14382fa3ea02ab5ec87419c526feea
+  $fShowDeclaration_$cshowsPrec ::
+    GHC.Types.Int -> Lib.Declaration -> GHC.Show.ShowS
+  {- Arity: 3, Strictness: <L,A><S,1*U><L,1*U>,
+     Unfolding: InlineRule (3, True, False)
+                (\ ds :: GHC.Types.Int x :: Lib.Declaration s :: GHC.Base.String ->
+                 GHC.Base.augment
+                   @ GHC.Types.Char
+                   (\ @ b c :: GHC.Types.Char -> b -> b[OneShot] n :: b[OneShot] ->
+                    GHC.Base.foldr
+                      @ GHC.Types.Char
+                      @ b
+                      c
+                      n
+                      (Lib.$fShowDeclaration_$cshow x))
+                   s) -}
+0ed6e31e6c588d24cdd7628e107977d0
+  $fShowExpression :: GHC.Show.Show Lib.Expression
+  DFunId[0]
+  {- Strictness: m, Inline: [ALWAYS] CONLIKE,
+     Unfolding: DFun:.
+                  @ Lib.Expression
+                  Lib.$fShowExpression_$cshowsPrec
+                  Lib.$fShowExpression_$cshow
+                  Lib.$fShowExpression_$cshowList -}
+0ed6e31e6c588d24cdd7628e107977d0
+  $fShowExpression1 ::
+    Lib.Expression -> GHC.Base.String -> [GHC.Types.Char]
+  {- Arity: 2,
+     Unfolding: (\ x :: Lib.Expression s :: GHC.Base.String[OneShot] ->
+                 GHC.Base.++ @ GHC.Types.Char (Lib.$fShowExpression_$cshow x) s) -}
+0ed6e31e6c588d24cdd7628e107977d0
+  $fShowExpression_$cshow :: Lib.Expression -> GHC.Base.String
+  {- Arity: 1, Strictness: <S,1*U> -}
+0ed6e31e6c588d24cdd7628e107977d0
+  $fShowExpression_$cshowList :: [Lib.Expression] -> GHC.Show.ShowS
+  {- Arity: 2, Strictness: <S,1*U><L,U>,
+     Unfolding: (\ ls :: [Lib.Expression] s :: GHC.Base.String ->
+                 GHC.Show.showList__ @ Lib.Expression Lib.$fShowExpression1 ls s) -}
+0ed6e31e6c588d24cdd7628e107977d0
+  $fShowExpression_$cshowsPrec ::
+    GHC.Types.Int -> Lib.Expression -> GHC.Show.ShowS
+  {- Arity: 3, Strictness: <L,A><S,1*U><L,1*U>,
+     Unfolding: InlineRule (3, True, False)
+                (\ ds :: GHC.Types.Int x :: Lib.Expression s :: GHC.Base.String ->
+                 GHC.Base.augment
+                   @ GHC.Types.Char
+                   (\ @ b c :: GHC.Types.Char -> b -> b[OneShot] n :: b[OneShot] ->
+                    GHC.Base.foldr
+                      @ GHC.Types.Char
+                      @ b
+                      c
+                      n
+                      (Lib.$fShowExpression_$cshow x))
+                   s) -}
+6ae91642ef140168a03f6630179edd94
+  $fShowLiteral :: GHC.Show.Show Lib.Literal
+  DFunId[0]
+  {- Strictness: m, Inline: [ALWAYS] CONLIKE,
+     Unfolding: DFun:.
+                  @ Lib.Literal
+                  Lib.$fShowLiteral_$cshowsPrec
+                  Lib.$fShowLiteral_$cshow
+                  Lib.$fShowLiteral_$cshowList -}
+6ae91642ef140168a03f6630179edd94
+  $fShowLiteral_$cshow :: Lib.Literal -> GHC.Base.String
+  {- Arity: 1, Strictness: <S,1*U>,
+     Unfolding: (\ ds :: Lib.Literal ->
+                 case ds of wild {
+                   Lib.StringLiteral s -> s
+                   Lib.CharLiteral c
+                   -> GHC.Types.: @ GHC.Types.Char c (GHC.Types.[] @ GHC.Types.Char)
+                   Lib.IntLiteral i -> GHC.Show.$fShowInteger_$cshow i
+                   Lib.FracLiteral f -> GHC.Float.$fShowDouble_$cshow f }) -}
+6ae91642ef140168a03f6630179edd94
+  $fShowLiteral_$cshowList :: [Lib.Literal] -> GHC.Show.ShowS
+  {- Arity: 2, Strictness: <S,1*U><L,U>,
+     Unfolding: InlineRule (2, True, False)
+                (\ ls :: [Lib.Literal] s :: GHC.Base.String ->
+                 GHC.Show.showList__
+                   @ Lib.Literal
+                   (Lib.$fShowLiteral_$cshowsPrec GHC.Show.shows18)
+                   ls
+                   s) -}
+6ae91642ef140168a03f6630179edd94
+  $fShowLiteral_$cshowsPrec ::
+    GHC.Types.Int -> Lib.Literal -> GHC.Show.ShowS
+  {- Arity: 3, Strictness: <L,A><S,1*U><L,U>, Inline: INLINE[0],
+     Unfolding: InlineRule (3, True, True)
+                (\ w :: GHC.Types.Int w1 :: Lib.Literal w2 :: GHC.Base.String ->
+                 Lib.$w$cshowsPrec1 w1 w2) -}
+ca758e77b640d60322a9c1fdc312a8d3
+  $fShowPattern :: GHC.Show.Show Lib.Pattern
+  DFunId[0]
+  {- Strictness: m, Inline: [ALWAYS] CONLIKE,
+     Unfolding: DFun:.
+                  @ Lib.Pattern
+                  Lib.$fShowPattern_$cshowsPrec
+                  Lib.$fShowPattern_$cshow
+                  Lib.$fShowPattern_$cshowList -}
+ca758e77b640d60322a9c1fdc312a8d3
+  $fShowPattern1 ::
+    Lib.Pattern -> GHC.Base.String -> [GHC.Types.Char]
+  {- Arity: 2,
+     Unfolding: (\ x :: Lib.Pattern s :: GHC.Base.String[OneShot] ->
+                 GHC.Base.++ @ GHC.Types.Char (Lib.$fShowPattern_$cshow x) s) -}
+29beca596a6a2103d8daaf86f6422c9b
+  $fShowPatternClause :: GHC.Show.Show Lib.PatternClause
+  DFunId[0]
+  {- Strictness: m, Inline: [ALWAYS] CONLIKE,
+     Unfolding: DFun:.
+                  @ Lib.PatternClause
+                  Lib.$fShowPatternClause_$cshowsPrec
+                  Lib.$fShowPatternClause_$cshow
+                  Lib.$fShowPatternClause_$cshowList -}
+29beca596a6a2103d8daaf86f6422c9b
+  $fShowPatternClause1 ::
+    Lib.PatternClause -> GHC.Base.String -> [GHC.Types.Char]
+  {- Arity: 2,
+     Unfolding: (\ x :: Lib.PatternClause
+                   s :: GHC.Base.String[OneShot] ->
+                 case x of ww { Lib.PatternClause ww1 ww2 ww3 ->
+                 GHC.Base.++ @ GHC.Types.Char (Lib.$w$cshow2 ww1 ww2 ww3) s }) -}
+29beca596a6a2103d8daaf86f6422c9b
+  $fShowPatternClause_$cshow :: Lib.PatternClause -> GHC.Base.String
+  {- Arity: 1, Strictness: <S(SLL),1*U(1*U,1*U,1*U)>,
+     Inline: INLINE[0],
+     Unfolding: InlineRule (1, True, False)
+                (\ w :: Lib.PatternClause ->
+                 case w of ww { Lib.PatternClause ww1 ww2 ww3 ->
+                 Lib.$w$cshow2 ww1 ww2 ww3 }) -}
+29beca596a6a2103d8daaf86f6422c9b
+  $fShowPatternClause_$cshowList ::
+    [Lib.PatternClause] -> GHC.Show.ShowS
+  {- Arity: 2, Strictness: <S,1*U><L,U>,
+     Unfolding: (\ ls :: [Lib.PatternClause] s :: GHC.Base.String ->
+                 GHC.Show.showList__
+                   @ Lib.PatternClause
+                   Lib.$fShowPatternClause1
+                   ls
+                   s) -}
+29beca596a6a2103d8daaf86f6422c9b
+  $fShowPatternClause_$cshowsPrec ::
+    GHC.Types.Int -> Lib.PatternClause -> GHC.Show.ShowS
+  {- Arity: 3, Strictness: <L,A><S(SLL),1*U(1*U,1*U,1*U)><L,1*U>,
+     Unfolding: InlineRule (3, True, False)
+                (\ ds :: GHC.Types.Int
+                   x :: Lib.PatternClause
+                   s :: GHC.Base.String ->
+                 GHC.Base.augment
+                   @ GHC.Types.Char
+                   (\ @ b c :: GHC.Types.Char -> b -> b[OneShot] n :: b[OneShot] ->
+                    GHC.Base.foldr
+                      @ GHC.Types.Char
+                      @ b
+                      c
+                      n
+                      (Lib.$fShowPatternClause_$cshow x))
+                   s) -}
+d33144f858ee0524a6eac0c8b3c67d2a
+  $fShowPatternClause_go :: [Lib.Pattern] -> [GHC.Types.Char]
+  {- Arity: 1, Strictness: <S,1*U> -}
+ca758e77b640d60322a9c1fdc312a8d3
+  $fShowPattern_$cshow :: Lib.Pattern -> GHC.Base.String
+  {- Arity: 1, Strictness: <S,1*U> -}
+ca758e77b640d60322a9c1fdc312a8d3
+  $fShowPattern_$cshowList :: [Lib.Pattern] -> GHC.Show.ShowS
+  {- Arity: 2, Strictness: <S,1*U><L,U>,
+     Unfolding: (\ ls :: [Lib.Pattern] s :: GHC.Base.String ->
+                 GHC.Show.showList__ @ Lib.Pattern Lib.$fShowPattern1 ls s) -}
+ca758e77b640d60322a9c1fdc312a8d3
+  $fShowPattern_$cshowsPrec ::
+    GHC.Types.Int -> Lib.Pattern -> GHC.Show.ShowS
+  {- Arity: 3, Strictness: <L,A><S,1*U><L,1*U>,
+     Unfolding: InlineRule (3, True, False)
+                (\ ds :: GHC.Types.Int x :: Lib.Pattern s :: GHC.Base.String ->
+                 GHC.Base.augment
+                   @ GHC.Types.Char
+                   (\ @ b c :: GHC.Types.Char -> b -> b[OneShot] n :: b[OneShot] ->
+                    GHC.Base.foldr
+                      @ GHC.Types.Char
+                      @ b
+                      c
+                      n
+                      (Lib.$fShowPattern_$cshow x))
+                   s) -}
+7cd229f34ca97b2b429d28cea1266d12
+  $fShowTypeExpression :: GHC.Show.Show Lib.TypeExpression
+  DFunId[0]
+  {- Strictness: m, Inline: [ALWAYS] CONLIKE,
+     Unfolding: DFun:.
+                  @ Lib.TypeExpression
+                  Lib.$fShowTypeExpression_$cshowsPrec
+                  Lib.$fShowTypeExpression_$cshow
+                  Lib.$fShowTypeExpression_$cshowList -}
+7cd229f34ca97b2b429d28cea1266d12
+  $fShowTypeExpression1 ::
+    Lib.TypeExpression -> GHC.Base.String -> [GHC.Types.Char]
+  {- Arity: 2,
+     Unfolding: (\ x :: Lib.TypeExpression
+                   s :: GHC.Base.String[OneShot] ->
+                 GHC.Base.++
+                   @ GHC.Types.Char
+                   (Lib.$fShowTypeExpression_$cshow x)
+                   s) -}
+7cd229f34ca97b2b429d28cea1266d12
+  $fShowTypeExpression_$cshow ::
+    Lib.TypeExpression -> GHC.Base.String
+  {- Arity: 1, Strictness: <S,1*U> -}
+7cd229f34ca97b2b429d28cea1266d12
+  $fShowTypeExpression_$cshowList ::
+    [Lib.TypeExpression] -> GHC.Show.ShowS
+  {- Arity: 2, Strictness: <S,1*U><L,U>,
+     Unfolding: (\ ls :: [Lib.TypeExpression] s :: GHC.Base.String ->
+                 GHC.Show.showList__
+                   @ Lib.TypeExpression
+                   Lib.$fShowTypeExpression1
+                   ls
+                   s) -}
+7cd229f34ca97b2b429d28cea1266d12
+  $fShowTypeExpression_$cshowsPrec ::
+    GHC.Types.Int -> Lib.TypeExpression -> GHC.Show.ShowS
+  {- Arity: 3, Strictness: <L,A><S,1*U><L,1*U>,
+     Unfolding: InlineRule (3, True, False)
+                (\ ds :: GHC.Types.Int
+                   x :: Lib.TypeExpression
+                   s :: GHC.Base.String ->
+                 GHC.Base.augment
+                   @ GHC.Types.Char
+                   (\ @ b c :: GHC.Types.Char -> b -> b[OneShot] n :: b[OneShot] ->
+                    GHC.Base.foldr
+                      @ GHC.Types.Char
+                      @ b
+                      c
+                      n
+                      (Lib.$fShowTypeExpression_$cshow x))
+                   s) -}
+ab85846aab6524a377354f7ce3483ed1
+  $fShowTypeSignature :: GHC.Show.Show Lib.TypeSignature
+  DFunId[0]
+  {- Strictness: m, Inline: [ALWAYS] CONLIKE,
+     Unfolding: DFun:.
+                  @ Lib.TypeSignature
+                  Lib.$fShowTypeSignature_$cshowsPrec
+                  Lib.$fShowTypeSignature_$cshow
+                  Lib.$fShowTypeSignature_$cshowList -}
+ab85846aab6524a377354f7ce3483ed1
+  $fShowTypeSignature1 ::
+    Lib.TypeSignature -> GHC.Base.String -> [GHC.Types.Char]
+  {- Arity: 2,
+     Unfolding: (\ x :: Lib.TypeSignature
+                   s :: GHC.Base.String[OneShot] ->
+                 case x of ww { Lib.TypeSignature ww1 ww2 ->
+                 case ww1 of ww3 { Lib.Context ww4 ->
+                 GHC.Base.++ @ GHC.Types.Char (Lib.$w$cshow3 ww4 ww2) s } }) -}
+ab85846aab6524a377354f7ce3483ed1
+  $fShowTypeSignature_$cshow :: Lib.TypeSignature -> GHC.Base.String
+  {- Arity: 1, Strictness: <S(S(S)L),1*U(1*U(1*U),1*U)>,
+     Inline: INLINE[0],
+     Unfolding: InlineRule (1, True, False)
+                (\ w :: Lib.TypeSignature ->
+                 case w of ww { Lib.TypeSignature ww1 ww2 ->
+                 case ww1 of ww3 { Lib.Context ww4 -> Lib.$w$cshow3 ww4 ww2 } }) -}
+ab85846aab6524a377354f7ce3483ed1
+  $fShowTypeSignature_$cshowList ::
+    [Lib.TypeSignature] -> GHC.Show.ShowS
+  {- Arity: 2, Strictness: <S,1*U><L,U>,
+     Unfolding: (\ ls :: [Lib.TypeSignature] s :: GHC.Base.String ->
+                 GHC.Show.showList__
+                   @ Lib.TypeSignature
+                   Lib.$fShowTypeSignature1
+                   ls
+                   s) -}
+ab85846aab6524a377354f7ce3483ed1
+  $fShowTypeSignature_$cshowsPrec ::
+    GHC.Types.Int -> Lib.TypeSignature -> GHC.Show.ShowS
+  {- Arity: 3, Strictness: <L,A><S(S(S)L),1*U(1*U(1*U),1*U)><L,1*U>,
+     Unfolding: InlineRule (3, True, False)
+                (\ ds :: GHC.Types.Int
+                   x :: Lib.TypeSignature
+                   s :: GHC.Base.String ->
+                 GHC.Base.augment
+                   @ GHC.Types.Char
+                   (\ @ b c :: GHC.Types.Char -> b -> b[OneShot] n :: b[OneShot] ->
+                    GHC.Base.foldr
+                      @ GHC.Types.Char
+                      @ b
+                      c
+                      n
+                      (Lib.$fShowTypeSignature_$cshow x))
+                   s) -}
+88ca911f7e138eec955d65408f7480df
+  $fShowVarName :: GHC.Show.Show Lib.VarName
+  DFunId[0]
+  {- HasNoCafRefs, Strictness: m, Inline: [ALWAYS] CONLIKE,
+     Unfolding: DFun:.
+                  @ Lib.VarName
+                  Lib.$fShowVarName_$cshowsPrec
+                  Lib.$fShowVarName_$cshow
+                  Lib.$fShowVarName_$cshowList -}
+88ca911f7e138eec955d65408f7480df
+  $fShowVarName1 ::
+    Lib.VarName -> GHC.Base.String -> [GHC.Types.Char]
+  {- Arity: 2, HasNoCafRefs,
+     Unfolding: (\ x :: Lib.VarName s :: GHC.Base.String[OneShot] ->
+                 case x of wild {
+                   Lib.VarName s1 -> GHC.Base.++ @ GHC.Types.Char s1 s
+                   Lib.ProperVarName s1 -> GHC.Base.++ @ GHC.Types.Char s1 s }) -}
+88ca911f7e138eec955d65408f7480df
+  $fShowVarName_$cshow :: Lib.VarName -> GHC.Base.String
+  {- Arity: 1, HasNoCafRefs, Strictness: <S,1*U>,
+     Unfolding: InlineRule (1, True, False)
+                (\ ds :: Lib.VarName ->
+                 case ds of wild { Lib.VarName s -> s Lib.ProperVarName s -> s }) -}
+88ca911f7e138eec955d65408f7480df
+  $fShowVarName_$cshowList :: [Lib.VarName] -> GHC.Show.ShowS
+  {- Arity: 2, HasNoCafRefs, Strictness: <S,1*U><L,U>,
+     Unfolding: (\ ls :: [Lib.VarName] s :: GHC.Base.String ->
+                 GHC.Show.showList__ @ Lib.VarName Lib.$fShowVarName1 ls s) -}
+88ca911f7e138eec955d65408f7480df
+  $fShowVarName_$cshowsPrec ::
+    GHC.Types.Int -> Lib.VarName -> GHC.Show.ShowS
+  {- Arity: 3, HasNoCafRefs, Strictness: <L,A><S,1*U><L,1*U>,
+     Unfolding: InlineRule (3, True, False)
+                (\ ds :: GHC.Types.Int x :: Lib.VarName s :: GHC.Base.String ->
+                 case x of wild {
+                   Lib.VarName s1
+                   -> GHC.Base.augment
+                        @ GHC.Types.Char
+                        (\ @ b c :: GHC.Types.Char -> b -> b[OneShot] n :: b[OneShot] ->
+                         GHC.Base.foldr @ GHC.Types.Char @ b c n s1)
+                        s
+                   Lib.ProperVarName s1
+                   -> GHC.Base.augment
+                        @ GHC.Types.Char
+                        (\ @ b c :: GHC.Types.Char -> b -> b[OneShot] n :: b[OneShot] ->
+                         GHC.Base.foldr @ GHC.Types.Char @ b c n s1)
+                        s }) -}
+1690f16ffc596d18f293cc756ca08b07
+  $s$dmshowList5 ::
+    Lib.Context -> GHC.Base.String -> [GHC.Types.Char]
+  {- Arity: 2,
+     Unfolding: (\ w :: Lib.Context w1 :: GHC.Base.String[OneShot] ->
+                 case w of ww { Lib.Context ww1 -> Lib.$w$cshowsPrec ww1 w1 }) -}
+e0680a6654013261867c0dccfdaeef68
+  $w$cshow :: Lib.VarName -> [Lib.TypeExpression] -> GHC.Base.String
+  {- Arity: 2, Strictness: <S,1*U><L,1*U>, Inline: [0],
+     Unfolding: (\ ww :: Lib.VarName ww1 :: [Lib.TypeExpression] ->
+                 let {
+                   n :: [GHC.Types.Char]
+                   = GHC.CString.unpackAppendCString#
+                       " "#
+                       (case Lib.$fShowContext_go ww1 of wild {
+                          [] -> GHC.Types.[] @ GHC.Types.Char : ds1 xs -> xs })
+                 } in
+                 case ww of wild {
+                   Lib.VarName s -> GHC.Base.++ @ GHC.Types.Char s n
+                   Lib.ProperVarName s -> GHC.Base.++ @ GHC.Types.Char s n }) -}
+811d7ea19181bec1c70c4919cdcaffae
+  $w$cshow1 :: [Lib.ContextualAssertation] -> GHC.Base.String
+  {- Arity: 1, Strictness: <S,1*U>, Inline: [0],
+     Unfolding: (\ ww :: [Lib.ContextualAssertation] ->
+                 case ww of wild {
+                   [] -> GHC.Types.[] @ GHC.Types.Char
+                   : ipv ipv1
+                   -> GHC.Base.++
+                        @ GHC.Types.Char
+                        (GHC.CString.unpackAppendCString#
+                           "("#
+                           (GHC.Base.++
+                              @ GHC.Types.Char
+                              (Lib.$fShowContext3 wild)
+                              Lib.$fShowContext2))
+                        Lib.$fShowContext1 }) -}
+216d0787de9f7a0757026a2d4bf18433
+  $w$cshow2 ::
+    Lib.VarName -> [Lib.Pattern] -> Lib.Expression -> GHC.Base.String
+  {- Arity: 3, Strictness: <S,1*U><L,1*U><L,1*U>, Inline: [0],
+     Unfolding: (\ ww :: Lib.VarName
+                   ww1 :: [Lib.Pattern]
+                   ww2 :: Lib.Expression ->
+                 let {
+                   n :: [GHC.Types.Char]
+                   = GHC.CString.unpackAppendCString#
+                       " "#
+                       (let {
+                          a :: [GHC.Types.Char]
+                          = GHC.CString.unpackAppendCString#
+                              " = "#
+                              (Lib.$fShowExpression_$cshow ww2)
+                        } in
+                        case Lib.$fShowPatternClause_go ww1 of wild {
+                          []
+                          -> GHC.Base.++ @ GHC.Types.Char (GHC.Types.[] @ GHC.Types.Char) a
+                          : ds1 xs -> GHC.Base.++ @ GHC.Types.Char xs a })
+                 } in
+                 case ww of wild {
+                   Lib.VarName s -> GHC.Base.++ @ GHC.Types.Char s n
+                   Lib.ProperVarName s -> GHC.Base.++ @ GHC.Types.Char s n }) -}
+a91107532c65036356a443262ec2d56d
+  $w$cshow3 ::
+    [Lib.ContextualAssertation]
+    -> Lib.TypeExpression -> GHC.Base.String
+  {- Arity: 2, Strictness: <S,1*U><L,1*U>, Inline: [0],
+     Unfolding: (\ ww :: [Lib.ContextualAssertation]
+                   ww1 :: Lib.TypeExpression ->
+                 case ww of wild {
+                   [] -> Lib.$fShowTypeExpression_$cshow ww1
+                   : ipv ipv1
+                   -> GHC.Base.++
+                        @ GHC.Types.Char
+                        (GHC.CString.unpackAppendCString#
+                           "("#
+                           (GHC.Base.++
+                              @ GHC.Types.Char
+                              (Lib.$fShowContext3 wild)
+                              Lib.$fShowContext2))
+                        (GHC.Base.++
+                           @ GHC.Types.Char
+                           Lib.$fShowContext1
+                           (Lib.$fShowTypeExpression_$cshow ww1)) }) -}
+e47e63a2fe6e809d42dfb1522680e3bb
+  $w$cshowsPrec ::
+    [Lib.ContextualAssertation] -> GHC.Base.String -> [GHC.Types.Char]
+  {- Arity: 2, Strictness: <S,1*U><L,1*U>, Inline: [0],
+     Unfolding: (\ ww :: [Lib.ContextualAssertation]
+                   w :: GHC.Base.String ->
+                 case ww of wild {
+                   [] -> w
+                   : ipv ipv1
+                   -> GHC.Base.++
+                        @ GHC.Types.Char
+                        (GHC.CString.unpackAppendCString#
+                           "("#
+                           (GHC.Base.++
+                              @ GHC.Types.Char
+                              (Lib.$fShowContext3 wild)
+                              Lib.$fShowContext2))
+                        (GHC.Base.++ @ GHC.Types.Char Lib.$fShowContext1 w) }) -}
+6ae91642ef140168a03f6630179edd94
+  $w$cshowsPrec1 ::
+    Lib.Literal -> GHC.Base.String -> [GHC.Types.Char]
+  {- Arity: 2, Strictness: <S,1*U><L,U>, Inline: [0],
+     Unfolding: (\ w :: Lib.Literal w1 :: GHC.Base.String ->
+                 case w of wild {
+                   Lib.StringLiteral s -> GHC.Base.++ @ GHC.Types.Char s w1
+                   Lib.CharLiteral c -> GHC.Types.: @ GHC.Types.Char c w1
+                   Lib.IntLiteral i
+                   -> case GHC.Show.$w$cshowsPrec1
+                             0
+                             i
+                             (GHC.Types.[] @ GHC.Types.Char) of ww2 { (#,#) ww3 ww4 ->
+                      GHC.Base.++
+                        @ GHC.Types.Char
+                        (GHC.Types.: @ GHC.Types.Char ww3 ww4)
+                        w1 }
+                   Lib.FracLiteral f
+                   -> case f of ww { GHC.Types.D# ww1 ->
+                      GHC.Base.++
+                        @ GHC.Types.Char
+                        (GHC.Float.$w$sshowSignedFloat
+                           GHC.Float.$fShowDouble_$sshowFloat
+                           GHC.Show.shows18
+                           ww1
+                           (GHC.Types.[] @ GHC.Types.Char))
+                        w1 } }) -}
+8922d745e720ef20764882925b71cc2c
+  data Context = Context [Lib.ContextualAssertation]
+ddba5e19248cdfb9a9bc552dae4f77de
+  data ContextualAssertation
+    = ContextualAssertation Lib.VarName [Lib.TypeExpression]
+cc14382fa3ea02ab5ec87419c526feea
+  data Declaration
+    = TypeSynonymDeclaration Lib.VarName
+                             [Lib.VarName]
+                             Lib.TypeExpression
+    | DataTypeDeclaration Lib.Context
+                          Lib.VarName
+                          [Lib.VarName]
+                          [Lib.Declaration]
+    | ClassDeclaration Lib.Context
+                       Lib.VarName
+                       [Lib.VarName]
+                       [Lib.Declaration]
+    | InstanceDeclaration Lib.Context
+                          Lib.VarName
+                          [Lib.TypeExpression]
+                          [Lib.Declaration]
+    | ValueDeclaration [Lib.PatternClause]
+    | TypeSignatureDeclaration Lib.VarName Lib.TypeSignature
+0ed6e31e6c588d24cdd7628e107977d0
+  data Expression
+    = LambdaExpression Lib.Pattern Lib.Expression
+    | ApplicationExpression Lib.Expression Lib.Expression
+    | LiteralExpression Lib.Literal
+    | VariableExpression Lib.VarName
+    | TypeAnnotatedExpression Lib.Expression Lib.TypeSignature
+6ae91642ef140168a03f6630179edd94
+  data Literal
+    = StringLiteral GHC.Base.String
+    | CharLiteral GHC.Types.Char
+    | IntLiteral GHC.Integer.Type.Integer
+    | FracLiteral GHC.Types.Double
+ca758e77b640d60322a9c1fdc312a8d3
+  data Pattern
+    = VarPattern Lib.VarName
+    | LiteralPattern Lib.Literal
+    | BlackHolePattern
+    | ConstructedPattern Lib.VarName [Lib.Pattern]
+29beca596a6a2103d8daaf86f6422c9b
+  data PatternClause
+    = PatternClause Lib.VarName [Lib.Pattern] Lib.Expression
+7cd229f34ca97b2b429d28cea1266d12
+  data TypeExpression
+    = FunctionTypeExpression Lib.TypeExpression Lib.TypeExpression
+    | ApplicationTypeExpression Lib.TypeExpression Lib.TypeExpression
+    | VariableTypeExpression Lib.VarName
+ab85846aab6524a377354f7ce3483ed1
+  data TypeSignature = TypeSignature Lib.Context Lib.TypeExpression
+88ca911f7e138eec955d65408f7480df
+  data VarName
+    = VarName GHC.Base.String | ProperVarName GHC.Base.String
+74639a8ad552b03371e622cd80a70471
+  functorClassTestCase :: Lib.Declaration
+  {- Strictness: m3,
+     Unfolding: (Lib.ClassDeclaration
+                   Lib.functorClassTestCase18
+                   Lib.functorClassTestCase22
+                   Lib.functorClassTestCase21
+                   Lib.functorClassTestCase1) -}
+40efced7c3de04083901f1f19cc2780b
+  functorClassTestCase1 :: [Lib.Declaration]
+  {- Strictness: m2,
+     Unfolding: (GHC.Types.:
+                   @ Lib.Declaration
+                   Lib.functorClassTestCase2
+                   (GHC.Types.[] @ Lib.Declaration)) -}
+d93831deaebbcb2f7e92730b3ae45dd0
+  functorClassTestCase10 :: Lib.TypeExpression
+  {- Strictness: m3,
+     Unfolding: (Lib.VariableTypeExpression
+                   Lib.functorClassTestCase11) -}
+c5a83cb914fbbf4c152bb9e3edea5ddc
+  functorClassTestCase11 :: Lib.VarName
+  {- Strictness: m1,
+     Unfolding: (Lib.VarName Lib.functorClassTestCase12) -}
+f546eb1e2759223b6ff7bbcef43117b6
+  functorClassTestCase12 :: [GHC.Types.Char]
+  {- Unfolding: (GHC.CString.unpackCString# "f"#) -}
+db15ddd5853a3337469dd27b04a8dea0
+  functorClassTestCase13 :: Lib.TypeExpression
+  {- Strictness: m2,
+     Unfolding: (Lib.ApplicationTypeExpression
+                   Lib.functorClassTestCase10
+                   Lib.functorClassTestCase14) -}
+3f41ea6b99fd5a36022c670f61c7f4d0
+  functorClassTestCase14 :: Lib.TypeExpression
+  {- Strictness: m3,
+     Unfolding: (Lib.VariableTypeExpression
+                   Lib.functorClassTestCase15) -}
+608f4557bf823835cef3ba91868b85ef
+  functorClassTestCase15 :: Lib.VarName
+  {- Strictness: m1,
+     Unfolding: (Lib.VarName Lib.functorClassTestCase16) -}
+eddee18de1530fee3a11f832d3152148
+  functorClassTestCase16 :: [GHC.Types.Char]
+  {- Unfolding: (GHC.CString.unpackCString# "a"#) -}
+b73057c42b0eecee4ad8bcfcc9c9e909
+  functorClassTestCase17 :: Lib.TypeExpression
+  {- Strictness: m1,
+     Unfolding: (Lib.FunctionTypeExpression
+                   Lib.functorClassTestCase14
+                   Lib.functorClassTestCase7) -}
+4dc26f5dac21191a831e72e605f9e02d
+  functorClassTestCase18 :: Lib.Context
+  {- HasNoCafRefs, Strictness: m,
+     Unfolding: (Lib.Context
+                   (GHC.Types.[] @ Lib.ContextualAssertation)) -}
+85bf41295f99533c52e95506767b5a7a
+  functorClassTestCase19 :: Lib.VarName
+  {- Strictness: m1,
+     Unfolding: (Lib.VarName Lib.functorClassTestCase20) -}
+4d0dd36f68a535c5ec9d9932d9ca68f9
+  functorClassTestCase2 :: Lib.Declaration
+  {- Strictness: m6,
+     Unfolding: (Lib.TypeSignatureDeclaration
+                   Lib.functorClassTestCase19
+                   Lib.functorClassTestCase3) -}
+29e5e04073feea2a5dc6267944b80f41
+  functorClassTestCase20 :: [GHC.Types.Char]
+  {- Unfolding: (GHC.CString.unpackCString# "fmap"#) -}
+6dd2f69281897740074ccd8c83322e9c
+  functorClassTestCase21 :: [Lib.VarName]
+  {- Strictness: m2,
+     Unfolding: (GHC.Types.:
+                   @ Lib.VarName
+                   Lib.functorClassTestCase11
+                   (GHC.Types.[] @ Lib.VarName)) -}
+7e7eecc566a1b8ebfa337a5e32c68d57
+  functorClassTestCase22 :: Lib.VarName
+  {- Strictness: m2,
+     Unfolding: (Lib.ProperVarName Lib.functorClassTestCase23) -}
+c6499167d645dd1b67a6860faa92cba6
+  functorClassTestCase23 :: [GHC.Types.Char]
+  {- Unfolding: (GHC.CString.unpackCString# "Functor"#) -}
+a25680c192a4acf4d5bc1bf0e3e5c0fd
+  functorClassTestCase3 :: Lib.TypeSignature
+  {- Strictness: m,
+     Unfolding: (Lib.TypeSignature
+                   Lib.functorClassTestCase18
+                   Lib.functorClassTestCase4) -}
+231c34a64cf6ad21994cfc3773bec536
+  functorClassTestCase4 :: Lib.TypeExpression
+  {- Strictness: m1,
+     Unfolding: (Lib.FunctionTypeExpression
+                   Lib.functorClassTestCase17
+                   Lib.functorClassTestCase5) -}
+08976903d7596be1fc0af2050e2fcab3
+  functorClassTestCase5 :: Lib.TypeExpression
+  {- Strictness: m1,
+     Unfolding: (Lib.FunctionTypeExpression
+                   Lib.functorClassTestCase13
+                   Lib.functorClassTestCase6) -}
+3b5dca0df9abffb3296867f7bd9502d0
+  functorClassTestCase6 :: Lib.TypeExpression
+  {- Strictness: m2,
+     Unfolding: (Lib.ApplicationTypeExpression
+                   Lib.functorClassTestCase10
+                   Lib.functorClassTestCase7) -}
+b4a722ca6e63aefef286a1a3ec583a91
+  functorClassTestCase7 :: Lib.TypeExpression
+  {- Strictness: m3,
+     Unfolding: (Lib.VariableTypeExpression
+                   Lib.functorClassTestCase8) -}
+76a0e0668ea3d01c342428683c1df300
+  functorClassTestCase8 :: Lib.VarName
+  {- Strictness: m1,
+     Unfolding: (Lib.VarName Lib.functorClassTestCase9) -}
+a92880b5cebea671ab4022fa48727955
+  functorClassTestCase9 :: [GHC.Types.Char]
+  {- Unfolding: (GHC.CString.unpackCString# "b"#) -}
+891921706c73dbf4cba57a5db1c30cd9
+  indent :: GHC.Base.String -> GHC.Base.String
+  {- Arity: 1, Strictness: <S,1*U>,
+     Unfolding: InlineRule (1, True, False)
+                (\ x :: GHC.Base.String ->
+                 Data.OldList.unlines
+                   (GHC.Base.build
+                      @ [GHC.Types.Char]
+                      (\ @ b1
+                         c :: [GHC.Types.Char] -> b1 -> b1[OneShot]
+                         n :: b1[OneShot] ->
+                       GHC.Base.foldr
+                         @ [GHC.Types.Char]
+                         @ b1
+                         (GHC.Base.mapFB
+                            @ [GHC.Types.Char]
+                            @ b1
+                            @ [GHC.Types.Char]
+                            c
+                            Lib.indent1)
+                         n
+                         (Data.OldList.lines x)))) -}
+63ce599a7943c2a11baab4b7113817fe
+  indent1 :: [GHC.Types.Char] -> [GHC.Types.Char]
+  {- Arity: 1,
+     Unfolding: (GHC.Base.++ @ GHC.Types.Char Lib.indent2) -}
+671af343d061b24baab61ece4a7c7b03
+  indent2 :: [GHC.Types.Char]
+  {- Unfolding: (GHC.CString.unpackCString# "  "#) -}
+6241d17afe8624de38878d671493ee3e
+  parenShow :: GHC.Show.Show a => a -> GHC.Base.String
+  {- Arity: 2, Strictness: <L,1*U(A,1*C1(U),A)><L,U>,
+     Unfolding: InlineRule (2, True, False)
+                (\ @ a $dShow :: GHC.Show.Show a eta :: a ->
+                 Lib.parens (GHC.Show.show @ a $dShow eta)) -}
+4fa17aae126451c47e11c0369c2f2243
+  parens :: GHC.Base.String -> GHC.Base.String
+  {- Arity: 1, Strictness: <L,1*U>,
+     Unfolding: (\ s :: GHC.Base.String ->
+                 GHC.CString.unpackAppendCString#
+                   "("#
+                   (GHC.Base.++ @ GHC.Types.Char s Lib.$fShowContext2)) -}
+8a4a58e9af7e6a682b568f70663d9f42
+  showLines :: GHC.Show.Show a => [a] -> GHC.Base.String
+  {- Arity: 2, HasNoCafRefs, Strictness: <L,1*U(A,1*C(U),A)><S,1*U>,
+     Unfolding: InlineRule (2, True, False)
+                (\ @ a $dShow :: GHC.Show.Show a eta :: [a] ->
+                 Data.OldList.unlines
+                   (GHC.Base.build
+                      @ [GHC.Types.Char]
+                      (\ @ b1
+                         c :: [GHC.Types.Char] -> b1 -> b1[OneShot]
+                         n :: b1[OneShot] ->
+                       GHC.Base.foldr
+                         @ a
+                         @ b1
+                         (GHC.Base.mapFB
+                            @ [GHC.Types.Char]
+                            @ b1
+                            @ a
+                            c
+                            (GHC.Show.show @ a $dShow))
+                         n
+                         eta))) -}
+4370e4a58b04e1a0eba3e297afc7182f
+  showWords :: GHC.Show.Show a => [a] -> GHC.Base.String
+  {- Arity: 2, HasNoCafRefs, Strictness: <L,1*U(A,1*U,A)><S,1*U>,
+     Unfolding: (\ @ a $dShow :: GHC.Show.Show a eta :: [a] ->
+                 let {
+                   f :: a -> [GHC.Types.Char] = GHC.Show.show @ a $dShow
+                 } in
+                 letrec {
+                   go5 :: [a] -> [GHC.Types.Char] {- Arity: 1, Strictness: <S,1*U> -}
+                   = \ ds :: [a] ->
+                     case ds of wild {
+                       [] -> GHC.Types.[] @ GHC.Types.Char
+                       : y ys
+                       -> GHC.Types.:
+                            @ GHC.Types.Char
+                            Lib.showWords1
+                            (GHC.Base.++ @ GHC.Types.Char (f y) (go5 ys)) }
+                 } in
+                 case go5 eta of wild {
+                   [] -> GHC.Types.[] @ GHC.Types.Char : ds1 xs -> xs }) -}
+3392e3c0775050aeb9d0d2827d77ed6f
+  showWords1 :: GHC.Types.Char
+  {- HasNoCafRefs, Unfolding: (GHC.Types.C# ' ') -}
+b7fdaf936b3aed3aaaaee11237c04a46
+  showtep :: Lib.TypeExpression -> GHC.Base.String
+  {- Arity: 1, Strictness: <S,1*U>,
+     Unfolding: InlineRule (1, True, False)
+                (\ a :: Lib.TypeExpression ->
+                 case a of wild {
+                   DEFAULT -> Lib.parens (Lib.$fShowTypeExpression_$cshow wild)
+                   Lib.VariableTypeExpression ds
+                   -> Lib.$fShowTypeExpression_$cshow wild }) -}
+29d8673e0561aa8029b64d2f39ee2bf7
+  testCase :: Lib.Expression
+  {- Strictness: m2,
+     Unfolding: (Lib.ApplicationExpression
+                   Lib.testCase4
+                   Lib.testCase1) -}
+7f04b681095701b150a965ce79fc1e0f
+  testCase' :: Lib.Expression
+  {- Strictness: m5,
+     Unfolding: (Lib.TypeAnnotatedExpression
+                   Lib.testCase'12
+                   Lib.testCase'1) -}
+5dae78b08880cd1577e49e8536424eb2
+  testCase'1 :: Lib.TypeSignature
+  {- Strictness: m,
+     Unfolding: (Lib.TypeSignature Lib.testCase'6 Lib.testCase'2) -}
+e03d7fbdb8c1b6e98b17cf8e303f88d3
+  testCase'10 :: Lib.VarName
+  {- Strictness: m2,
+     Unfolding: (Lib.ProperVarName Lib.testCase'11) -}
+2293f30f985b564ed0421dc4f9de6242
+  testCase'11 :: [GHC.Types.Char]
+  {- Unfolding: (GHC.CString.unpackCString# "Show"#) -}
+c2417efe589a7dd341f3efd636b14cf3
+  testCase'12 :: Lib.Expression
+  {- Strictness: m4,
+     Unfolding: (Lib.VariableExpression Lib.testCase'13) -}
+1d895f7340407dc57965a414b8d66a53
+  testCase'13 :: Lib.VarName
+  {- Strictness: m1, Unfolding: (Lib.VarName Lib.testCase'14) -}
+db27a1b0265229a8c331b4324ae69b63
+  testCase'14 :: [GHC.Types.Char]
+  {- Unfolding: (GHC.CString.unpackCString# "show"#) -}
+606efa95e6976f9be5b626d01bbd08e3
+  testCase'2 :: Lib.TypeExpression
+  {- Strictness: m1,
+     Unfolding: (Lib.FunctionTypeExpression
+                   Lib.functorClassTestCase14
+                   Lib.testCase'3) -}
+905bec0fb9bca6de9df2adc7e711593f
+  testCase'3 :: Lib.TypeExpression
+  {- Strictness: m3,
+     Unfolding: (Lib.VariableTypeExpression Lib.testCase'4) -}
+cec728224d0c3960db16561dc29f706f
+  testCase'4 :: Lib.VarName
+  {- Strictness: m2, Unfolding: (Lib.ProperVarName Lib.testCase'5) -}
+2f1893371169d5e5654121a691aee1eb
+  testCase'5 :: [GHC.Types.Char]
+  {- Unfolding: (GHC.CString.unpackCString# "String"#) -}
+f31e08caa1c51a2dd8780894fb2c940f
+  testCase'6 :: Lib.Context
+  {- Strictness: m, Unfolding: (Lib.Context Lib.testCase'7) -}
+be7dcc3594e1dcc64d6594f6b4c3339d
+  testCase'7 :: [Lib.ContextualAssertation]
+  {- Strictness: m2,
+     Unfolding: (GHC.Types.:
+                   @ Lib.ContextualAssertation
+                   Lib.testCase'8
+                   (GHC.Types.[] @ Lib.ContextualAssertation)) -}
+7b0426b286a0b4bedef6276b44e15b88
+  testCase'8 :: Lib.ContextualAssertation
+  {- Strictness: m,
+     Unfolding: (Lib.ContextualAssertation
+                   Lib.testCase'10
+                   Lib.testCase'9) -}
+ba927c77d925065645d5703ad53ff11e
+  testCase'9 :: [Lib.TypeExpression]
+  {- Strictness: m2,
+     Unfolding: (GHC.Types.:
+                   @ Lib.TypeExpression
+                   Lib.functorClassTestCase14
+                   (GHC.Types.[] @ Lib.TypeExpression)) -}
+853943536862ee2ada5cdca12b548256
+  testCase1 :: Lib.Expression
+  {- HasNoCafRefs, Strictness: m3,
+     Unfolding: (Lib.LiteralExpression Lib.testCase2) -}
+3ec9b110583128b90ed9f4db6a61a29f
+  testCase2 :: Lib.Literal
+  {- HasNoCafRefs, Strictness: m3,
+     Unfolding: (Lib.IntLiteral Lib.testCase3) -}
+ede808320573abdbf7ede28ceee2d075
+  testCase3 :: GHC.Integer.Type.Integer
+  {- HasNoCafRefs, Unfolding: (__integer 5) -}
+307a685aa520fc818f931416550097b6
+  testCase4 :: Lib.Expression
+  {- Strictness: m1,
+     Unfolding: (Lib.LambdaExpression Lib.testCase8 Lib.testCase5) -}
+258c60aa96936ee46f4de7fc78f3a49d
+  testCase5 :: Lib.Expression
+  {- Strictness: m4,
+     Unfolding: (Lib.VariableExpression Lib.testCase6) -}
+104b548869163e984159f0586c9f60b0
+  testCase6 :: Lib.VarName
+  {- Strictness: m1, Unfolding: (Lib.VarName Lib.testCase7) -}
+5c403960a34839010ddd2a17f2cb2d04
+  testCase7 :: [GHC.Types.Char]
+  {- Unfolding: (GHC.CString.unpackCString# "x"#) -}
+2166008c3fa6a31c2efc6c4714194d7c
+  testCase8 :: Lib.Pattern
+  {- Strictness: m1, Unfolding: (Lib.VarPattern Lib.testCase6) -}
+instance GHC.Show.Show [Lib.Context] = Lib.$fShowContext
+instance GHC.Show.Show [Lib.ContextualAssertation]
+  = Lib.$fShowContextualAssertation
+instance GHC.Show.Show [Lib.Declaration] = Lib.$fShowDeclaration
+instance GHC.Show.Show [Lib.Expression] = Lib.$fShowExpression
+instance GHC.Show.Show [Lib.Literal] = Lib.$fShowLiteral
+instance GHC.Show.Show [Lib.Pattern] = Lib.$fShowPattern
+instance GHC.Show.Show [Lib.PatternClause]
+  = Lib.$fShowPatternClause
+instance GHC.Show.Show [Lib.TypeExpression]
+  = Lib.$fShowTypeExpression
+instance GHC.Show.Show [Lib.TypeSignature]
+  = Lib.$fShowTypeSignature
+instance GHC.Show.Show [Lib.VarName] = Lib.$fShowVarName
+vectorised variables:
+vectorised tycons:
+vectorised reused tycons:
+parallel variables:
+parallel tycons:
+trusted: safe
+require own pkg trusted: False
+
