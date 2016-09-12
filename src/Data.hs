@@ -1,3 +1,5 @@
+module Data where
+
 class Pretty p where
   pretty :: p -> String
 

@@ -1,6 +1,10 @@
 module FEST where
 
 import Data.List
+import Data
+
+class Crawl c where
+  crawl :: (VarName -> VarName) -> c -> c
 
 data Declaration
   -- type Srting = List Char
@@ -26,12 +30,22 @@ instance Pretty Declaration where
   pretty (ValueDeclaration pats) = indent $ prettyLines pats
   pretty (TypeSignatureDeclaration name ty) = pretty name ++ " :: " ++ pretty ty
 
+instance Crawl Declaration where
+  crawl f (TypeSynonymDeclaration v vs e) = TypeSynonymDeclaration (f v) (map f vs) (crawl f e)
+  crawl f (DataTypeDeclaration ctx v vs ds) = DataTypeDeclaration (crawl f ctx) (f v) (map f vs) (map (crawl f) ds)
+  crawl f (ClassDeclaration ctx v vs ds) = ClassDeclaration (crawl f ctx) (f v) (map f vs) (map (crawl f) ds)
+  crawl f (InstanceDeclaration ctx v tes ds) = InstanceDeclaration (crawl f ctx) (f v) (map (crawl f) tes) (map (crawl f) ds)
+  crawl f (ValueDeclaration pcs) = ValueDeclaration (map (crawl f) pcs)
+  crawl f (TypeSignatureDeclaration v ts) = TypeSignatureDeclaration (f v) (crawl f ts)
+
 -- name pat1 pat2 pat3 = exp
 data PatternClause = PatternClause VarName [Pattern] Expression deriving (Show,Eq)
 
 instance Pretty PatternClause where
   pretty (PatternClause v pats e) = pretty v ++ " " ++ (unwords . map pretty $ pats) ++ " = " ++ pretty e
 
+instance Crawl PatternClause where
+  crawl f (PatternClause v pats e) = PatternClause (f v) (map (crawl f) pats) (crawl f e)
 {- fromMaybe :: Maybe a -> a
  - fromMaybe (Just a) = a
  - fromMaybe Nothing = undefined
@@ -77,10 +91,21 @@ vpretty l@(LiteralExpression _) = pretty l
 vpretty v@(VariableExpression _) = pretty v
 vpretty a = parenPretty a
 
+instance Crawl Expression where
+  crawl f (LambdaExpression p e) = LambdaExpression (crawl f p) (crawl f e)
+  crawl f (CaseExpression e cs) = CaseExpression (crawl f e) (map (crawl f) cs)
+  crawl f (ApplicationExpression a b) = ApplicationExpression (crawl f a) (crawl f b)
+  crawl f (LiteralExpression l) = LiteralExpression l
+  crawl f (VariableExpression v) = VariableExpression (f v)
+  crawl f (TypeAnnotatedExpression e ts) = TypeAnnotatedExpression (crawl f e) (crawl f ts)
+
 data Case = Case Pattern Expression deriving (Show,Eq)
 
 instance Pretty Case where
   pretty (Case p e) = pretty p ++ " -> " ++ pretty e
+
+instance Crawl Case where
+  crawl f (Case p e) = Case (crawl f p) (crawl f e)
 
 data Pattern
   -- xs
@@ -98,6 +123,12 @@ instance Pretty Pattern where
   pretty (LiteralPattern l) = pretty l
   pretty BlackHolePattern = "_"
   pretty (ConstructedPattern v ps) = parens $ pretty v ++ " " ++ (unwords . map pretty $ ps)
+
+instance Crawl Pattern where
+  crawl f (VarPattern v) = VarPattern (f v)
+  crawl f (LiteralPattern l) = LiteralPattern l
+  crawl f BlackHolePattern = BlackHolePattern
+  crawl f (ConstructedPattern v ps) = ConstructedPattern (f v) (map (crawl f) ps)
 
 data Literal
   -- "asdf"
@@ -130,10 +161,17 @@ prettytep a = case a of
   (VariableTypeExpression _) -> pretty a
   _ -> parenPretty a
 
+instance Crawl TypeExpression where
+  crawl f (ApplicationTypeExpression a b) = ApplicationTypeExpression (crawl f a) (crawl f b)
+  crawl f (VariableTypeExpression v) = VariableTypeExpression (f v)
+
 data TypeSignature = TypeSignature Context TypeExpression deriving (Show,Eq)
 
 instance Pretty TypeSignature where
   pretty (TypeSignature ctx typ) = pretty ctx ++ pretty typ
+
+instance Crawl TypeSignature where
+  crawl f (TypeSignature ctx typ) = TypeSignature (crawl f ctx) (crawl f typ)
 
 data Context = Context [ContextualAssertation] deriving (Show,Eq)
 
@@ -141,10 +179,16 @@ instance Pretty Context where
   pretty (Context []) = ""
   pretty (Context ctxs) = (++" => ") . parens . intercalate ", " . map pretty $ ctxs
 
+instance Crawl Context where
+  crawl f (Context ctas) = Context (map (crawl f) ctas)
+
 data ContextualAssertation = ContextualAssertation VarName [TypeExpression] deriving (Show,Eq)
 
 instance Pretty ContextualAssertation where
   pretty (ContextualAssertation v tys) = pretty v ++ " " ++ (unwords . map pretty $ tys)
+
+instance Crawl ContextualAssertation where
+  crawl f (ContextualAssertation v tes) = ContextualAssertation (f v) (map (crawl f) tes)
 
 data VarName = VarName NameSpace String deriving (Show,Eq)
 

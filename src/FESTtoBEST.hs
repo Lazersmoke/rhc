@@ -15,9 +15,14 @@ injectVarName v = injectVarNameType v B.UnknownType
 runRenamer :: [F.Declaration] -> [F.Declaration] 
 runRenamer = undefined
 
--- Front end lambdas turn in to single case case-expressions in the back end
+inline :: F.Declaration -> [F.Declaration] -> F.Expression
+inline (F.TypeSynonymDeclaration v vs e) = undefined
+  where
+    doIt (VarName TypeCons s) = 
 
+-- Simplify a single expression
 simplify :: F.Expression -> B.Expression
+-- Front end lambdas turn in to single case case-expressions in the back end
 -- \{n} -> {f}  =>  \a -> case a of {n} -> {f}
 simplify (F.LambdaExpression n e) = 
   B.LambdaExpression 

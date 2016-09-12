@@ -1,6 +1,7 @@
 module BEST where
 
 import Data.List
+import Data
 
 data Expression
   = VariableExpression VarID
@@ -13,77 +14,84 @@ data Expression
   -- asdf :: Something
   | TypedExpression Expression CoreType
   -- Polymorphic capital lambda argument
-  | TypeExpression CoreType
+  | TypeExpression CoreType deriving Show
 
 data CoreType
   = TypeVariableType VarID
   | ApplicationType CoreType CoreType
   | FunctionType CoreType CoreType
   | ForAllType VarID CoreType
-  | UnknownType
+  | UnknownType deriving Show
   -- | LiteralType TypeLiteral
 -- GHC.TypeLit BS
 -- data TypeLiteral = NumericTypeLiteral Integer | StringTypeLiteral String
 
-instance Show CoreType where
-  show (TypeVariableType s) = show s
+instance Pretty CoreType where
+  pretty (TypeVariableType s) = pretty s
   -- (Cons 1) Nil
-  show (ApplicationType a b) = show a ++ " " ++ tshow b
-  show (FunctionType a b@(FunctionType _ _)) = show a ++ " -> " ++ show b
-  show (FunctionType a b) = show a ++ " -> " ++ show b
-  show (ForAllType v t) = "forall " ++ show v ++ ". " ++ show t
-  show UnknownType = "UNINFERENCED TYPE"
+  pretty (ApplicationType a b) = pretty a ++ " " ++ tpretty b
+  pretty (FunctionType a b@(FunctionType _ _)) = pretty a ++ " -> " ++ pretty b
+  pretty (FunctionType a b) = pretty a ++ " -> " ++ pretty b
+  pretty (ForAllType v t) = "forall " ++ pretty v ++ ". " ++ pretty t
+  pretty UnknownType = "UNINFERENCED TYPE"
 
-tshow :: CoreType -> String
-tshow (TypeVariableType s) = show s
-tshow a = "(" ++ show a ++ ")"
+tpretty :: CoreType -> String
+tpretty (TypeVariableType s) = pretty s
+tpretty a = "(" ++ pretty a ++ ")"
 
-instance Show Expression where
-  show (VariableExpression v) = show v
-  show (LiteralExpression l) = show l
-  show (CaseExpression e cs) = "case " ++ show e ++ " of\n  " ++ (intercalate "\n  " . map show $ cs)
-  show (ApplicationExpression a b) = show a ++ " " ++ vshow b
-  show (LambdaExpression a e) = "\\" ++ show a ++ ". " ++ vshow e
-  show (TypeExpression t) = "{TYPE " ++ show t ++ "}"
-  show (TypedExpression e t) = vshow e ++ " :: " ++ show t
+instance Pretty Expression where
+  pretty (VariableExpression v) = pretty v
+  pretty (LiteralExpression l) = pretty l
+  pretty (CaseExpression e cs) = "case " ++ pretty e ++ " of\n  " ++ (intercalate "\n  " . map pretty $ cs)
+  pretty (ApplicationExpression a b) = pretty a ++ " " ++ vpretty b
+  pretty (LambdaExpression a e) = "\\" ++ pretty a ++ ". " ++ vpretty e
+  pretty (TypeExpression t) = "{TYPE " ++ pretty t ++ "}"
+  pretty (TypedExpression e t) = vpretty e ++ " :: " ++ pretty t
 
-vshow :: Expression -> String
-vshow v@(VariableExpression _) = show v
-vshow l@(LiteralExpression _) = show l
-vshow a = "(" ++ show a ++ ")"
+vpretty :: Expression -> String
+vpretty v@(VariableExpression _) = pretty v
+vpretty l@(LiteralExpression _) = pretty l
+vpretty a = "(" ++ pretty a ++ ")"
 
 -- Pattern to match, variables bound in said pattern (x,xs for (Cons x xs)), and result expression
-data Case = Case Pattern [VarID] Expression
+data Case = Case Pattern [VarID] Expression deriving Show
 
-instance Show Case where
-  show (Case p _ e) = show p ++ " -> " ++ show e
+instance Pretty Case where
+  pretty (Case p _ e) = pretty p ++ " -> " ++ pretty e
 
-data Pattern = DataPattern VarID [Pattern] | VariablePattern VarID | LitPattern Literal | DefaultPattern
+data Pattern = DataPattern VarID [Pattern] | VariablePattern VarID | LitPattern Literal | DefaultPattern deriving Show
 
-instance Show Pattern where
-  show (DataPattern v ps) = "(" ++ show v ++ " " ++ (unwords . map show $ ps)
-  show (VariablePattern v) = show v
-  show (LitPattern l) = show l
-  show DefaultPattern = "DEFAULT"
+instance Pretty Pattern where
+  pretty (DataPattern v ps) = "(" ++ pretty v ++ " " ++ (unwords . map pretty $ ps) ++ ")"
+  pretty (VariablePattern v) = pretty v
+  pretty (LitPattern l) = pretty l
+  pretty DefaultPattern = "DEFAULT"
 
-data VarID = VarID String Namespace CoreType
+data VarID = VarID String Namespace CoreType deriving Show
 
-instance Show VarID where
-  show (VarID a _ t) = "[" ++ a ++ " :: " ++ show t ++ "]"
+instance Pretty VarID where
+  --pretty (VarID a _ t) = "[" ++ a ++ " :: " ++ pretty t ++ "]"
+  pretty (VarID a _ t) = a 
 
 data Namespace = Type | Value | TypeCons | ValueCons deriving Show
+
+instance Pretty Namespace where
+  pretty Type = "type"
+  pretty Value = "value"
+  pretty TypeCons = "Type"
+  pretty ValueCons = "Value"
 
 data Literal
   = StringLiteral String
   | CharLiteral Char
   | IntLiteral Integer
-  | FracLiteral Double
+  | FracLiteral Double deriving Show
 
-instance Show Literal where
-  show (StringLiteral s) = show s
-  show (CharLiteral c) = show c
-  show (IntLiteral i) = show i
-  show (FracLiteral d) = show d
+instance Pretty Literal where
+  pretty (StringLiteral s) = show s
+  pretty (CharLiteral c) = show c
+  pretty (IntLiteral i) = pretty i
+  pretty (FracLiteral d) = pretty d
 
 {-
  - case (Cons 1 Nil) of
