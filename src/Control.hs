@@ -5,9 +5,6 @@ import qualified ParseFEST as FP
 import qualified BEST as B
 import Text.Parsec
 
-compileExample :: String -> IO B.Expression
-compileExample =
-
 compile :: String -> IO (Maybe B.Expression)
 compile file = do
   parseResult <- readFile file >>= parseProgram
@@ -15,10 +12,10 @@ compile file = do
     Left e -> do
       print e
       return Nothing
-    Right fest -> do
+    Right fest -> 
       
 
-parse :: String -> Either ParseError [F.Declaration]
-parse = FP.iParse FP.sourceFile
+parseProgram :: String -> Either ParseError [F.Declaration]
+parseProgram = FP.iParse FP.sourceFile
 
 simplify :: [F.Declaration]

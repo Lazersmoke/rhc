@@ -15,10 +15,8 @@ injectVarName v = injectVarNameType v B.UnknownType
 runRenamer :: [F.Declaration] -> [F.Declaration] 
 runRenamer = undefined
 
-inline :: F.Declaration -> [F.Declaration] -> F.Expression
-inline (F.TypeSynonymDeclaration v vs e) = undefined
-  where
-    doIt (VarName TypeCons s) = 
+--inline :: F.Declaration -> F.Declaration -> F.Declaration
+--inline (F.TypeSynonymDeclaration v vs e) (F.TypeSynonymDeclaration
 
 -- Simplify a single expression
 simplify :: F.Expression -> B.Expression

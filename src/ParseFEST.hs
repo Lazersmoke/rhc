@@ -38,8 +38,8 @@ declaration = choice
 typeSynonymDeclaration :: IParser Declaration
 typeSynonymDeclaration = 
   TypeSynonymDeclaration 
-    <$> (lexString "type" *> typeVar)
-    <*> many typeVar <* lexString "=" 
+    <$> (lexString "type" *> varName)
+    <*> many varName <* lexString "=" 
     <*> typeExpression
     <?> "Type Synonym Declaration"
 
@@ -47,8 +47,8 @@ dataTypeDeclaration :: IParser Declaration
 dataTypeDeclaration = 
   DataTypeDeclaration
     <$> (lexString "data" *> context)
-    <*> typeCons 
-    <*> manyTill typeVar (try $ lexString "where" *> eol)
+    <*> varName 
+    <*> manyTill varName (try $ lexString "where" *> eol)
     <*> (indented *> block (typeSignatureDeclaration <* eol))
     <?> "Data Type Declaration"
 
@@ -56,8 +56,8 @@ classDeclaration :: IParser Declaration
 classDeclaration = 
   ClassDeclaration
     <$> (lexString "class" *> context)
-    <*> typeCons
-    <*> manyTill typeVar (try $ lexString "where" *> eol)
+    <*> varName
+    <*> manyTill varName (try $ lexString "where" *> eol)
     <*> (indented *> block ((try typeSignatureDeclaration <|> valueDeclaration) <* eol))
     <?> "Class Declaration"
 
@@ -65,7 +65,7 @@ instanceDeclaration :: IParser Declaration
 instanceDeclaration = 
   InstanceDeclaration
     <$> (lexString "instance" *> context)
-    <*> typeCons 
+    <*> varName 
     <*> manyTill (parensParse typeExpression) (try $ lexString "where" *> eol)
     <*> (indented *> block (valueDeclaration <* eol))
     <?> "Instance Declaration"
@@ -73,7 +73,7 @@ instanceDeclaration =
 typeSignatureDeclaration :: IParser Declaration
 typeSignatureDeclaration =
   TypeSignatureDeclaration
-    <$> (valueCons <|> valueVar) <* lexString "::"
+    <$> varName <* lexString "::"
     <*> typeSignature
     <?> "Type Signature Declaration"
 
@@ -83,7 +83,7 @@ valueDeclaration = ValueDeclaration <$> many1 patternClause
 patternClause :: IParser PatternClause
 patternClause =
   PatternClause
-    <$> valueVar
+    <$> varName
     <*> many patternParser <* lexString "="
     <*> expression
 
@@ -104,7 +104,7 @@ literalExpression :: IParser Expression
 literalExpression = LiteralExpression <$> literal
 
 variableExpression :: IParser Expression
-variableExpression = VariableExpression <$> (valueVar <|> valueCons)
+variableExpression = VariableExpression <$> varName
 
 typeAnnotatedExpression :: IParser Expression
 typeAnnotatedExpression = 
@@ -130,7 +130,7 @@ context = Context <$> (try assert <|> try asserts <|> noContext) <?> "Context"
 contextualAssertation :: IParser ContextualAssertation
 contextualAssertation = 
   ContextualAssertation 
-    <$> typeCons
+    <$> varName
     <*> many typeExpression
     <?> "Contextual Assertation"
 
@@ -140,19 +140,10 @@ typeExpression = chainl1 atom (pure ApplicationTypeExpression) <?> "Type Express
     atom = parensParse typeExpression <|> variableTypeExpression
 
 variableTypeExpression :: IParser TypeExpression
-variableTypeExpression = VariableTypeExpression <$> (typeVar <|> typeCons)
+variableTypeExpression = VariableTypeExpression <$> varName
 
-typeVar :: IParser VarName
-typeVar = lexeme $ (VarName Type .) . (:) <$> lower <*> many alphaNum
-
-typeCons :: IParser VarName
-typeCons = lexeme $ (VarName TypeCons .) . (:) <$> upper <*> many alphaNum
-
-valueVar :: IParser VarName
-valueVar = lexeme $ (VarName Value .) . (:) <$> lower <*> many alphaNum
-
-valueCons :: IParser VarName
-valueCons = lexeme $ (VarName ValueCons .) . (:) <$> upper <*> many alphaNum
+varName :: IParser VarName
+varName = lexeme $ (VarName .) . (:) <$> letter <*> many alphaNum
 
 patternParser :: IParser Pattern
 patternParser = choice
@@ -163,7 +154,7 @@ patternParser = choice
   ] <?> "Pattern"
 
 varPattern :: IParser Pattern
-varPattern = VarPattern <$> valueVar
+varPattern = VarPattern <$> varName
 
 litPattern :: IParser Pattern
 litPattern = LiteralPattern <$> literal
@@ -174,7 +165,7 @@ blackHolePattern = lexeme (char '_') *> pure BlackHolePattern <?> "Black Hole Pa
 constructedPattern :: IParser Pattern
 constructedPattern = parensParse
   (ConstructedPattern
-    <$> valueCons
+    <$> varName
     <*> many patternParser
     <?> "Constructor Pattern"
   )

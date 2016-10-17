@@ -190,16 +190,16 @@ instance Pretty ContextualAssertation where
 instance Crawl ContextualAssertation where
   crawl f (ContextualAssertation v tes) = ContextualAssertation (f v) (map (crawl f) tes)
 
-data VarName = VarName NameSpace String deriving (Show,Eq)
+data VarName = VarName String deriving (Show,Eq)
 
 instance Pretty VarName where
   pretty (VarName n s) = s -- ++ " [" ++ pretty n ++ "]"
 
-data NameSpace = TypeCons | ValueCons | Value | Type deriving (Show,Eq)
+--data NameSpace = TypeCons | ValueCons | Value | Type deriving (Show,Eq)
 
 -- (\x -> x) 5
 testCase :: Expression
-testCase = ApplicationExpression (LambdaExpression (VarPattern (VarName Value "x")) (VariableExpression (VarName Value "x"))) (LiteralExpression (IntLiteral 5))
+testCase = ApplicationExpression (LambdaExpression (VarPattern (VarName "x")) (VariableExpression (VarName "x"))) (LiteralExpression (IntLiteral 5))
 
 -- pretty :: Pretty a => a -> String
 {-
