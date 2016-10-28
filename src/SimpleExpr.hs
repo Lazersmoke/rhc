@@ -53,8 +53,7 @@ fancyExpr (Function from to) = fancyExpr from ++ " -> " ++ fancyExpr to
 fancyExpr (Application a b) = fancyExpr a ++ " " ++ fancyExpr b
 fancyExpr (Lambda bind e) = "(λ" ++ show bind ++ "." ++ fancyExpr e ++ ")"
 fancyExpr (Variable bind) = show bind
-fancyExpr (Literal (StringValue s) _) = show s
-fancyExpr (Literal (IntValue i) _) = show i
+fancyExpr (Literal l _) = show l
 fancyExpr LitArrow = "{->}"
 
 data TypedName = TypedName {-Source Name-}String {-Unique-}Int {-Type-}SimpleExpr
