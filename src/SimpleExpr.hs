@@ -10,44 +10,43 @@ data SimpleExpr
   | Lambda TypedName SimpleExpr
   | Variable TypedName 
   | Literal LiteralValue SimpleExpr
-  | LitKind
+  | LitArrow
   deriving Eq
 
 newtype TypeLayer = TypeLayer SimpleExpr deriving (Eq,Show)
 
 -- (Arrow $ Type (LitKind)) $ Term with type 
 
-pattern Function from to <- Application (Application Arrow from) to
-pattern Arrow <- Application (Application _ LitKind) (Application (Application _ LitKind) LitKind)
+pattern Function from to <- Application (Application LitArrow from) to
+--pattern Arrow <- Application (Application _ LitKind) (Application (Application _ LitKind) LitKind)
 -- (->) :: (->) (((->) *) *) *
 -- function (function kind kind) kind
 -- recArrow :: SimpleExpr -> SimpleExpr
 -- recArrow ty = Application (Application (recArrow ty) (Application (Application (recArrow ty) ty) ty)) ty
 
 function :: SimpleExpr -> SimpleExpr -> SimpleExpr
-function from to = Application (Application arrow from) to
+function from to = Application (Application LitArrow from) to
 
 -- (->) :: * -> * -> *
 -- (->) :: (((->) *) (((->) *) *))
 -- (->) :: (from $ (from $ *))
-arrow :: SimpleExpr
-arrow = arrowOf LitKind
-arrowOf :: SimpleExpr -> SimpleExpr
-arrowOf e = Application fromKind (Application fromKind e)
-  where
-    fromKind = Application arrow e
+--arrow :: SimpleExpr
+--arrow = arrowOf LitKind
+--arrowOf :: SimpleExpr -> SimpleExpr
+--arrowOf e = Application fromKind (Application fromKind e)
+  --where
+    --fromKind = Application arrow e
 
 instance Show SimpleExpr where
-  show = showExpr
+  show = fancyExpr
 
 showExpr :: SimpleExpr -> String
 --showExpr (Function a b) = "(" ++ showExpr a ++ " -> " ++ showExpr b ++ ")"
-showExpr Arrow = "{->}"
 showExpr (Application a b) = "(" ++ showExpr a ++ "$" ++ showExpr b ++ ")"
 showExpr (Lambda bind e) = "(λ" ++ show bind ++ "." ++ showExpr e ++ ")"
 showExpr (Variable bind) = show bind
 showExpr (Literal i typ) = "(" ++ show i ++ " :: " ++ show typ ++ ")"
-showExpr LitKind = "{*}"
+showExpr LitArrow = "{->}"
 
 fancyExpr :: SimpleExpr -> String
 fancyExpr (Function from to) = fancyExpr from ++ " -> " ++ fancyExpr to
@@ -56,9 +55,12 @@ fancyExpr (Lambda bind e) = "(λ" ++ show bind ++ "." ++ fancyExpr e ++ ")"
 fancyExpr (Variable bind) = show bind
 fancyExpr (Literal (StringValue s) _) = show s
 fancyExpr (Literal (IntValue i) _) = show i
-fancyExpr LitKind = "{*}"
+fancyExpr LitArrow = "{->}"
 
-data TypedName = TypedName {-Source Name-}String {-Unique-}Int {-Type-}SimpleExpr deriving Eq
+data TypedName = TypedName {-Source Name-}String {-Unique-}Int {-Type-}SimpleExpr
+instance Eq TypedName where
+  (==) (TypedName _ ua _) (TypedName _ ub _) = ua == ub
+
 instance Show TypedName where
   show (TypedName name uniq typ) = "(" ++ show uniq ++ "[" ++ name ++ "]" ++ " :: " ++ show typ ++ ")"
 
@@ -67,28 +69,34 @@ instance Show LiteralValue where
   show (IntValue i) = "LIT{" ++ show i ++ "}"
   show (StringValue s) = "LIT{" ++ show s ++ "}"
 
+kindStar :: SimpleExpr
+kindStar = Literal (StringValue "*") kindStar
+
 idEx :: SimpleExpr
 idEx = Lambda x (Variable x)
   where
     x = TypedName "x" 0 intType
-    intType = (Literal (StringValue "Int") LitKind)
+    intType = (Literal (StringValue "Int") kindStar)
 
 k :: SimpleExpr
 k = Lambda x (Lambda underScoreDiscard (Variable x))
   where
     x = TypedName "x" 0 intType
     underScoreDiscard = TypedName "_" 1 intType
-    intType = (Literal (StringValue "Int") LitKind)
+    intType = (Literal (StringValue "Int") kindStar)
 
 bigLambda :: SimpleExpr
 bigLambda = Lambda bigX (Lambda x (Variable x))
   where
-    bigX = TypedName "X" 0 LitKind
-    x = TypedName "x" 1 bigX
+    bigX = TypedName "X" 0 kindStar
+    x = TypedName "x" 1 (Variable bigX)
 
 type TypeError = String
 getType :: SimpleExpr -> Either TypeError SimpleExpr
 getType (Variable (TypedName _ _ typ)) = Right typ
+getType (Application LitArrow a) = case getType a of
+  Left e -> Left e
+  Right a -> Right $ function a a
 getType (Application l@(Lambda (TypedName _ _ bind) body) beta) = case getType bind of
   Left e -> Left e
   Right a -> case getType beta of
@@ -102,10 +110,26 @@ getType (Lambda (TypedName _ _ typ) e) = case getType e of
   Right t -> Right $ function typ t
   Left e -> Left e
 getType (Literal _ t) = Right t
+getType LitArrow = undefined
 
---betaReduce :: SimpleExpr -> SimpleExpr
---betaReduce (Application (Lambda e) beta) = inline (i,beta) e
---betaReduce x = x
+substitute :: TypedName -> TypedName -> SimpleExpr -> SimpleExpr
+substitute f r (Application a b) = Application (substitute f r a) (substitute f r b)
+substitute f r (Lambda b@(TypedName s u t) e) = 
+  Lambda 
+    (if b == f then r else TypedName s u (substitute f r t)) 
+    (substitute f r e)
+substitute f r (Variable v@(TypedName s u t)) = 
+  if v == f 
+    then Variable r 
+    else Variable (TypedName s u (substitute f r t))
+substitute _ _ l@(Literal _ _) = l
+substitute _ _ LitArrow = LitArrow
+
+betaReduce :: SimpleExpr -> SimpleExpr
+betaReduce d@(Application (Lambda b e) (Variable beta)) = case getType d of
+  Left e -> d
+  Right _ -> substitute b beta e
+betaReduce x = x
 {-
 data RPS = Rock | Paper | Scissors deriving (Show,Eq)
 
