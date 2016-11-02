@@ -22,6 +22,10 @@ pattern Function from to <- Application (Application LitArrow from) to
 function :: SimpleExpr -> SimpleExpr -> SimpleExpr
 function from to = Application (Application LitArrow from) to
 
+-- \x::a -> \y::b -> x::a
+-- :: \a::* -> \b::* -> a::*
+-- :: *
+
 instance Show SimpleExpr where
   show = fancyExpr
 
