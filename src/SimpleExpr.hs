@@ -7,13 +7,14 @@ import Data.Char
 
 data SimpleExpr
   = Application SimpleExpr SimpleExpr
+  -- Lambdas at the value level are either upper or lowercase. At the type level they are a ∀
   | Lambda TypedName SimpleExpr
   | Variable TypedName 
   | Literal LiteralValue SimpleExpr
   | LitArrow
   deriving Eq
 
-newtype TypeLayer = TypeLayer SimpleExpr deriving (Eq,Show)
+--newtype TypeLayer = TypeLayer SimpleExpr deriving (Eq,Show)
 
 -- (Arrow $ Type (LitKind)) $ Term with type 
 
@@ -22,8 +23,12 @@ pattern Function from to <- Application (Application LitArrow from) to
 function :: SimpleExpr -> SimpleExpr -> SimpleExpr
 function from to = Application (Application LitArrow from) to
 
--- \x::a -> \y::b -> x::a
--- :: \a::* -> \b::* -> a::*
+-- \a::* -> \b::* -> \x::a::* -> \y::b::* -> x::a::*
+-- :: ∀a::* (∀b::* (b::* -> a::*))
+-- :: *
+--
+-- \a::Int::* -> \b::Int::* -> a::Int::*
+-- :: Int::* -> Int::* -> Int::*
 -- :: *
 
 instance Show SimpleExpr where
@@ -125,9 +130,9 @@ kindaEqual a b = a == b
 data TypeError = MismatchedTypes SimpleExpr SimpleExpr | NotAFunction SimpleExpr SimpleExpr deriving (Show,Eq)
 getType :: SimpleExpr -> Either TypeError SimpleExpr
 getType (Variable (TypedName _ _ typ)) = Right typ
-getType (Application LitArrow a) = case getType a of
+getType (Function funcIn funcOut) = case getType funcIn of
   Left e -> Left e
-  Right a -> Right $ function a a
+  Right a -> Right $ function funcIn funcOut
 --getType (Application l@(Lambda (TypedName _ _ bind) body) beta) = case getType bind of
   --Left e -> Left e
   --Right a -> case getType beta of
