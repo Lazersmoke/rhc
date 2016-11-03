@@ -7,8 +7,9 @@ import Data.Char
 
 data SimpleExpr
   = Application SimpleExpr SimpleExpr
-  -- Lambdas at the value level are either upper or lowercase. At the type level they are a ∀
   | Lambda TypedName SimpleExpr
+  | PolyLambda TypedName SimpleExpr
+  | ForAll TypedName SimpleExpr
   | Variable TypedName 
   | Literal LiteralValue SimpleExpr
   | LitArrow
@@ -25,6 +26,10 @@ function from to = Application (Application LitArrow from) to
 
 -- \a::* -> \b::* -> \x::a::* -> \y::b::* -> x::a::*
 -- :: ∀a::* (∀b::* (b::* -> a::*))
+-- :: *
+--
+-- \t::* -> \a::t -> a::t
+-- :: ∀t::* (t::* -> t::*)
 -- :: *
 --
 -- \a::Int::* -> \b::Int::* -> a::Int::*
@@ -54,6 +59,8 @@ fancyExpr :: SimpleExpr -> String
 fancyExpr (Function from to) = fancyExpr from ++ " -> " ++ fancyExpr to
 fancyExpr (Application a b) = fancyExpr a ++ " " ++ fancyExpr b
 fancyExpr (Lambda bind e) = "(λ" ++ show bind ++ "." ++ fancyExpr e ++ ")"
+fancyExpr (PolyLambda bind e) = "(POLYλ" ++ show bind ++ "." ++ fancyExpr e ++ ")"
+fancyExpr (ForAll bind e) = "(∀" ++ show bind ++ "." ++ fancyExpr e ++ ")"
 fancyExpr (Variable bind) = show bind
 fancyExpr (Literal l _) = show l
 fancyExpr LitArrow = "{->}"
@@ -67,7 +74,7 @@ instance Show TypedName where
   --show (TypedName name uniq typ) = "(" ++ show uniq ++ "[" ++ name ++ "]" ++ " :: " ++ show typ ++ ")"
 
 cleanName :: TypedName -> String
-cleanName (TypedName name _ typ) = "(" ++ name ++ " :: " ++ show typ ++ ")"
+cleanName (TypedName name _ _) = name
 
 data LiteralValue = IntValue Int | StringValue String deriving (Eq)
 instance Show LiteralValue where
@@ -93,8 +100,13 @@ k = Lambda x (Lambda underScoreDiscard (Variable x))
     underScoreDiscard = TypedName "_" 1 intType
     intType = (Literal (StringValue "Int") kindStar)
 
+--
+-- bigLambda = ^a::* -> \x::a -> x::a
+-- bigLambda :: forall a. a -> a
+-- bigLambda :: Lambda (TypedName "X" 2 kindStar) (Application (Application LitArrow x) x)
+--
 bigLambda :: SimpleExpr
-bigLambda = Lambda bigX (Lambda x (Variable x))
+bigLambda = PolyLambda bigX (Lambda x (Variable x))
   where
     bigX = TypedName "X" 0 kindStar
     x = TypedName "x" 1 (Variable bigX)
@@ -108,7 +120,7 @@ errorTest = Application (Lambda x (Variable x)) (Literal (StringValue "meow") (L
 -- \x -> x
 -- :: forall a. a -> a
 -- \@X::* -> \x::X -> x::X
--- :: \x -> (x -> x)
+-- :: forall x. x -> x
 --
 -- (*::sort -> (t::* -> t::*)::*) :: sort -> *
 --
@@ -123,21 +135,21 @@ errorTest = Application (Lambda x (Variable x)) (Literal (StringValue "meow") (L
 -- timesTwo :: Int -> Int
 -- timesTwo = \x::Int -> ((times :: Int -> (Int -> Int)) (x::Int) (2::Int))
 
+-- KINDaequal! Haha! get it? KIND? lol
 kindaEqual :: SimpleExpr -> SimpleExpr -> Bool
 kindaEqual (Literal (StringValue "*") _) (Literal (StringValue "*") _) = True
 kindaEqual a b = a == b
 
-data TypeError = MismatchedTypes SimpleExpr SimpleExpr | NotAFunction SimpleExpr SimpleExpr deriving (Show,Eq)
+data TypeError = MismatchedTypes SimpleExpr SimpleExpr | NotAFunction SimpleExpr SimpleExpr deriving Eq
+instance Show TypeError where
+  show (MismatchedTypes a b) = "Type {" ++ show a ++ "} did not match {" ++ show b ++ "}"
+  show (NotAFunction a b) = "Type {" ++ show a ++ "} is not a function, but was applied to {" ++ show b ++ "}"
+
 getType :: SimpleExpr -> Either TypeError SimpleExpr
 getType (Variable (TypedName _ _ typ)) = Right typ
-getType (Function funcIn funcOut) = case getType funcIn of
-  Left e -> Left e
-  Right a -> Right $ function funcIn funcOut
---getType (Application l@(Lambda (TypedName _ _ bind) body) beta) = case getType bind of
+--getType (Function funcIn funcOut) = case getType funcIn of
   --Left e -> Left e
-  --Right a -> case getType beta of
-    --Left e -> Left e
-    --Right b -> if a == b then getType body else Left $ MismatchedTypes a b
+  --Right a -> Right $ function funcIn funcOut
 getType (Application appA appB) = case getType appA of
   Right (Function funcIn funcOut) -> case getType appB of
     Right appBType -> if kindaEqual funcIn appBType then Right funcOut else Left $ MismatchedTypes funcIn appBType
@@ -147,8 +159,16 @@ getType (Application appA appB) = case getType appA of
 getType (Lambda (TypedName _ _ typ) e) = case getType e of
   Right t -> Right $ function typ t
   Left e -> Left e
+getType (PolyLambda tyName e) = getType e >>= (Right . ForAll tyName) 
+getType (ForAll _ e) = getType e
 getType (Literal _ t) = Right t
-getType LitArrow = undefined
+getType LitArrow = Right $ function kindStar (function kindStar kindStar)
+
+getTypes :: SimpleExpr -> [SimpleExpr]
+getTypes e = e : case getType e of
+  Right (Literal (StringValue "[%]") _) -> [sort]
+  Right typ -> getTypes typ
+  Left _ -> []
 
 substitute :: TypedName -> TypedName -> SimpleExpr -> SimpleExpr
 substitute f r (Application a b) = Application (substitute f r a) (substitute f r b)
