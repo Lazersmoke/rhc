@@ -19,6 +19,21 @@ data SimpleExpr
 
 -- (Arrow $ Type (LitKind)) $ Term with type 
 
+parseExpr :: Parser SimpleExpr
+parseExpr = parseLambda <|> parseVar
+
+parseVar :: Parser SimpleExpr
+parseVar = Variable <$> parseName
+
+parseName :: Parser TypedName
+parseName = TypedName <$> ((:[]) <$> alphaNum) <*> pure 0 <*> pure kindStar
+
+parseLambda :: Parser SimpleExpr
+parseLambda = 
+  Lambda
+  <$> (char '\\' *> parseName <* string "->")
+  <*> parseExpr
+
 pattern Function from to <- Application (Application LitArrow from) to
 
 function :: SimpleExpr -> SimpleExpr -> SimpleExpr
@@ -39,31 +54,15 @@ function from to = Application (Application LitArrow from) to
 instance Show SimpleExpr where
   show = fancyExpr
 
-showExpr :: SimpleExpr -> String
---showExpr (Function a b) = "(" ++ showExpr a ++ " -> " ++ showExpr b ++ ")"
-showExpr (Application a b) = "(" ++ showExpr a ++ "$" ++ showExpr b ++ ")"
-showExpr (Lambda bind e) = "(λ" ++ show bind ++ "." ++ showExpr e ++ ")"
-showExpr (Variable bind) = show bind
-showExpr (Literal i typ) = "(" ++ show i ++ " :: " ++ show typ ++ ")"
-showExpr LitArrow = "{->}"
-
-cleanExpr :: SimpleExpr -> String
-cleanExpr (Function from to) = fancyExpr from ++ " -> " ++ fancyExpr to
-cleanExpr (Application a b) = fancyExpr a ++ " " ++ fancyExpr b
-cleanExpr (Lambda bind e) = "(λ" ++ show bind ++ "." ++ fancyExpr e ++ ")"
-cleanExpr (Variable bind) = show bind
-cleanExpr (Literal l _) = show l
-cleanExpr LitArrow = "{->}"
-
 fancyExpr :: SimpleExpr -> String
 fancyExpr (Function from to) = fancyExpr from ++ " -> " ++ fancyExpr to
+fancyExpr LitArrow = "{->}"
 fancyExpr (Application a b) = fancyExpr a ++ " " ++ fancyExpr b
 fancyExpr (Lambda bind e) = "(λ" ++ show bind ++ "." ++ fancyExpr e ++ ")"
 fancyExpr (PolyLambda bind e) = "(POLYλ" ++ show bind ++ "." ++ fancyExpr e ++ ")"
 fancyExpr (ForAll bind e) = "(∀" ++ show bind ++ "." ++ fancyExpr e ++ ")"
 fancyExpr (Variable bind) = show bind
 fancyExpr (Literal l _) = show l
-fancyExpr LitArrow = "{->}"
 
 data TypedName = TypedName {-Source Name-}String {-Unique-}Int {-Type-}SimpleExpr
 instance Eq TypedName where
@@ -169,6 +168,9 @@ getTypes e = e : case getType e of
   Right (Literal (StringValue "[%]") _) -> [sort]
   Right typ -> getTypes typ
   Left _ -> []
+
+printTypes :: SimpleExpr -> IO ()
+printTypes = mapM_ print . getTypes
 
 substitute :: TypedName -> TypedName -> SimpleExpr -> SimpleExpr
 substitute f r (Application a b) = Application (substitute f r a) (substitute f r b)
