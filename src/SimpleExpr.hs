@@ -5,34 +5,84 @@ import Text.Parsec
 import Text.Parsec.String
 import Data.Char
 
-data SimpleExpr
-  = Application SimpleExpr SimpleExpr
-  | Lambda TypedName SimpleExpr
-  | PolyLambda TypedName SimpleExpr
-  | ForAll TypedName SimpleExpr
-  | Variable TypedName 
-  | Literal LiteralValue SimpleExpr
+type SimpleExpr = Expr TypedName
+type ParsedExpr = Expr Name
+
+data Expr b
+  = Application (Expr b) (Expr b)
+  | Lambda b (Expr b)
+  | PolyLambda b (Expr b)
+  | ForAll b (Expr b)
+  | Variable b 
+  | Literal LiteralValue (Expr b)
   | LitArrow
-  deriving Eq
+  deriving (Show,Eq)
+
+instance Functor Expr where
+  fmap f (Application a b) = Application (fmap f a) (fmap f b)
+  fmap f (Lambda b e) = Lambda (f b) (fmap f e)
+  fmap f (PolyLambda b e) = PolyLambda (f b) (fmap f e)
+  fmap f (ForAll b e) = ForAll (f b) (fmap f e)
+  fmap f (Variable v) = Variable (f v)
+  fmap f (Literal v t) = Literal v (fmap f t)
+  fmap _ LitArrow = LitArrow
 
 --newtype TypeLayer = TypeLayer SimpleExpr deriving (Eq,Show)
 
 -- (Arrow $ Type (LitKind)) $ Term with type 
 
-parseExpr :: Parser SimpleExpr
-parseExpr = parseLambda <|> parseVar
+compileIt :: String -> Either ParseError (Expr (Unique Name))
+compileIt = (typeIt <$>) . (enumIt <$>) . parseIt
+  where
+    parseIt = parse parseExpr ""
+    enumIt = enumerateExpr
+    typeIt = id
 
-parseVar :: Parser SimpleExpr
-parseVar = Variable <$> parseName
+lexeme :: Parser a -> Parser a
+lexeme = (<*(spaces<?>"Lexical Whitespace"))
 
-parseName :: Parser TypedName
-parseName = TypedName <$> ((:[]) <$> alphaNum) <*> pure 0 <*> pure kindStar
+parseExpr :: Parser ParsedExpr
+parseExpr = chainl1 (lexeme realParse <?> "Expression") parseAppl <?> "Applicable Expression"
+  where
+    realParse = parseParenExpr <|> parseLambda <|> parseVar
 
-parseLambda :: Parser SimpleExpr
+parseParenExpr :: Parser ParsedExpr
+parseParenExpr = (lexeme (char '(') <?> "Open Paren") *> parseExpr <* (lexeme (char ')') <?> "Close Paren")
+
+parseVar :: Parser ParsedExpr
+parseVar = Variable <$> parseName <?> "Variable"
+
+parseAppl :: Parser (Expr a -> Expr a -> Expr a)
+parseAppl = pure Application
+
+parseTrivialTypedName :: Parser TypedName
+parseTrivialTypedName = Typed <$> pure kindStar <*> (Unique <$> pure 0 <*> parseName)
+
+parseName :: Parser Name
+parseName = lexeme (many1 alphaNum) <?> "Name"
+
+parseLambda :: Parser ParsedExpr
 parseLambda = 
   Lambda
-  <$> (char '\\' *> parseName <* string "->")
+  <$> (lexeme (char '\\') *> parseName <* lexeme (string "->"))
   <*> parseExpr
+  <?> "Lambda"
+
+-- In hind sight I should probably have used a fold or a StateT Int
+enumerateExpr :: Expr Name -> Expr (Unique Name)
+enumerateExpr = snd . go 0
+  where
+    go :: Int -> Expr Name -> (Int, Expr (Unique Name))
+    go n (Application a b) = (n'',Application a' b')
+      where
+        (n',a') = go n a
+        (n'',b') = go n' b
+    go n (Lambda b e) = let (n',e') = go (succ n) e in (n', Lambda (Unique n b) e')
+    go n (PolyLambda b e) = let (n',e') = go (succ n) e in (n', PolyLambda (Unique n b) e')
+    go n (ForAll b e) = let (n',e') = go (succ n) e in (n', ForAll (Unique n b) e')
+    go n (Variable v) = (succ n, Variable (Unique n v))
+    go n (Literal v t) = let (n',t') = go n t in (n',Literal v t')
+    go n LitArrow = (n,LitArrow)
 
 pattern Function from to <- Application (Application LitArrow from) to
 
@@ -51,29 +101,46 @@ function from to = Application (Application LitArrow from) to
 -- :: Int::* -> Int::* -> Int::*
 -- :: *
 
-instance Show SimpleExpr where
-  show = fancyExpr
+cleanExpr :: SimpleExpr -> String
+cleanExpr = printExpr cleanName
 
 fancyExpr :: SimpleExpr -> String
-fancyExpr (Function from to) = fancyExpr from ++ " -> " ++ fancyExpr to
-fancyExpr LitArrow = "{->}"
-fancyExpr (Application a b) = fancyExpr a ++ " " ++ fancyExpr b
-fancyExpr (Lambda bind e) = "(λ" ++ show bind ++ "." ++ fancyExpr e ++ ")"
-fancyExpr (PolyLambda bind e) = "(POLYλ" ++ show bind ++ "." ++ fancyExpr e ++ ")"
-fancyExpr (ForAll bind e) = "(∀" ++ show bind ++ "." ++ fancyExpr e ++ ")"
-fancyExpr (Variable bind) = show bind
-fancyExpr (Literal l _) = show l
+fancyExpr = printExpr showTyped
+  where
+    showTyped (Typed t (Unique u s)) = s ++ "[" ++ show u ++ "] :: " ++ fancyExpr t
 
-data TypedName = TypedName {-Source Name-}String {-Unique-}Int {-Type-}SimpleExpr
-instance Eq TypedName where
-  (==) (TypedName _ ua _) (TypedName _ ub _) = ua == ub
+plainExpr :: ParsedExpr -> String
+plainExpr = printExpr id
 
-instance Show TypedName where
-  show = cleanName
-  --show (TypedName name uniq typ) = "(" ++ show uniq ++ "[" ++ name ++ "]" ++ " :: " ++ show typ ++ ")"
+uniqueExpr :: Expr (Unique Name) -> String
+uniqueExpr = printExpr showUnique
+  where
+    showUnique (Unique u s) = s ++ "[" ++ show u ++ "]"
+
+printExpr :: (a -> String) -> Expr a -> String
+printExpr f (Function from to) = printExpr f from ++ " -> " ++ printExpr f to
+printExpr f LitArrow = "{->}"
+printExpr f (Application a b) = printExpr f a ++ " " ++ printExpr f b
+printExpr f (Lambda bind e) = "(λ" ++ f bind ++ "." ++ printExpr f e ++ ")"
+printExpr f (PolyLambda bind e) = "(POLYλ" ++ f bind ++ "." ++ printExpr f e ++ ")"
+printExpr f (ForAll bind e) = "(∀" ++ f bind ++ "." ++ printExpr f e ++ ")"
+printExpr f (Variable bind) = f bind
+printExpr f (Literal l _) = show l
+
+type Name = {-Source Name-}String
+data Unique a = Unique {-Unique-}Int a deriving Show
+data Typed a = Typed {-Type-}SimpleExpr a deriving (Show,Eq)
+
+type TypedName = Typed (Unique Name)
+
+typedName :: String -> Int -> SimpleExpr -> TypedName
+typedName s u t = Typed t (Unique u s)
+
+instance Eq (Unique a) where
+  (==) (Unique ua _) (Unique ub _) = ua == ub
 
 cleanName :: TypedName -> String
-cleanName (TypedName name _ _) = name
+cleanName (Typed _ (Unique _ name)) = name
 
 data LiteralValue = IntValue Int | StringValue String deriving (Eq)
 instance Show LiteralValue where
@@ -89,14 +156,14 @@ sort = Literal (StringValue "[%]") sort
 idEx :: SimpleExpr
 idEx = Lambda x (Variable x)
   where
-    x = TypedName "x" 0 intType
+    x = typedName "x" 0 intType
     intType = (Literal (StringValue "Int") kindStar)
 
 k :: SimpleExpr
 k = Lambda x (Lambda underScoreDiscard (Variable x))
   where
-    x = TypedName "x" 0 intType
-    underScoreDiscard = TypedName "_" 1 intType
+    x = typedName "x" 0 intType
+    underScoreDiscard = typedName "_" 1 intType
     intType = (Literal (StringValue "Int") kindStar)
 
 --
@@ -107,14 +174,14 @@ k = Lambda x (Lambda underScoreDiscard (Variable x))
 bigLambda :: SimpleExpr
 bigLambda = PolyLambda bigX (Lambda x (Variable x))
   where
-    bigX = TypedName "X" 0 kindStar
-    x = TypedName "x" 1 (Variable bigX)
+    bigX = typedName "X" 0 kindStar
+    x = typedName "x" 1 (Variable bigX)
 
 errorTest :: SimpleExpr
 errorTest = Application (Lambda x (Variable x)) (Literal (StringValue "meow") (Literal (StringValue "NotInt") kindStar))
   where
     intType = Literal (StringValue "Int") kindStar
-    x = TypedName "x" 0 intType
+    x = typedName "x" 0 intType
 
 -- \x -> x
 -- :: forall a. a -> a
@@ -145,7 +212,7 @@ instance Show TypeError where
   show (NotAFunction a b) = "Type {" ++ show a ++ "} is not a function, but was applied to {" ++ show b ++ "}"
 
 getType :: SimpleExpr -> Either TypeError SimpleExpr
-getType (Variable (TypedName _ _ typ)) = Right typ
+getType (Variable (Typed typ _)) = Right typ
 --getType (Function funcIn funcOut) = case getType funcIn of
   --Left e -> Left e
   --Right a -> Right $ function funcIn funcOut
@@ -155,7 +222,7 @@ getType (Application appA appB) = case getType appA of
     Left e -> Left e
   Right a -> Left $ NotAFunction appA appB
   Left e -> Left e
-getType (Lambda (TypedName _ _ typ) e) = case getType e of
+getType (Lambda (Typed typ _) e) = case getType e of
   Right t -> Right $ function typ t
   Left e -> Left e
 getType (PolyLambda tyName e) = getType e >>= (Right . ForAll tyName) 
@@ -174,14 +241,14 @@ printTypes = mapM_ print . getTypes
 
 substitute :: TypedName -> TypedName -> SimpleExpr -> SimpleExpr
 substitute f r (Application a b) = Application (substitute f r a) (substitute f r b)
-substitute f r (Lambda b@(TypedName s u t) e) = 
+substitute f r (Lambda b@(Typed t (Unique u s)) e) = 
   Lambda 
-    (if b == f then r else TypedName s u (substitute f r t)) 
+    (if b == f then r else typedName s u (substitute f r t)) 
     (substitute f r e)
-substitute f r (Variable v@(TypedName s u t)) = 
+substitute f r (Variable v@(Typed t (Unique u s))) = 
   if v == f 
     then Variable r 
-    else Variable (TypedName s u (substitute f r t))
+    else Variable (typedName s u (substitute f r t))
 substitute _ _ l@(Literal _ _) = l
 substitute _ _ LitArrow = LitArrow
 
