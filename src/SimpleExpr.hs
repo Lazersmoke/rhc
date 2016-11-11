@@ -1,9 +1,13 @@
 {-# LANGUAGE PatternSynonyms #-}
 module SimpleExpr where
 
-import Text.Parsec
+import Text.Parsec hiding (State)
 import Text.Parsec.String
 import Data.Char
+import Data.Monoid
+import qualified Data.Map as Map
+import Data.Map (Map)
+import Control.Monad.State.Lazy
 
 type SimpleExpr = Expr TypedName
 type ParsedExpr = Expr Name
@@ -27,15 +31,21 @@ instance Functor Expr where
   fmap f (Literal v t) = Literal v (fmap f t)
   fmap _ LitArrow = LitArrow
 
---newtype TypeLayer = TypeLayer SimpleExpr deriving (Eq,Show)
+instance Foldable Expr where
+  foldMap f (Application a b) = foldMap f a <> foldMap f b
+  foldMap f (Lambda b e) = f b <> foldMap f e
+  foldMap f (PolyLambda b e) = f b <> foldMap f e
+  foldMap f (ForAll b e) = f b <> foldMap f e
+  foldMap f (Variable v) = f v
+  foldMap f (Literal _ t) = foldMap f t
+  foldMap _ LitArrow = mempty
 
--- (Arrow $ Type (LitKind)) $ Term with type 
-
-compileIt :: String -> Either ParseError (Expr (Unique Name))
-compileIt = (typeIt <$>) . (enumIt <$>) . parseIt
+compile :: String -> Either ParseError (Expr (Unique Name))
+compile = (lexScopeIt . typeIt . enumIt <$>) . parseIt
   where
     parseIt = parse parseExpr ""
     enumIt = enumerateExpr
+    lexScopeIt = lexicallyScopeExpr 
     typeIt = id
 
 lexeme :: Parser a -> Parser a
@@ -69,21 +79,75 @@ parseLambda =
   <?> "Lambda"
 
 -- In hind sight I should probably have used a fold or a StateT Int
-enumerateExpr :: Expr Name -> Expr (Unique Name)
-enumerateExpr = snd . go 0
-  where
-    go :: Int -> Expr Name -> (Int, Expr (Unique Name))
-    go n (Application a b) = (n'',Application a' b')
-      where
-        (n',a') = go n a
-        (n'',b') = go n' b
-    go n (Lambda b e) = let (n',e') = go (succ n) e in (n', Lambda (Unique n b) e')
-    go n (PolyLambda b e) = let (n',e') = go (succ n) e in (n', PolyLambda (Unique n b) e')
-    go n (ForAll b e) = let (n',e') = go (succ n) e in (n', ForAll (Unique n b) e')
-    go n (Variable v) = (succ n, Variable (Unique n v))
-    go n (Literal v t) = let (n',t') = go n t in (n',Literal v t')
-    go n LitArrow = (n,LitArrow)
+-- Later: Compare this original attempt to the one using a state monad below
+-- even Later: Compare this to traverse :P
+--enumerateExpr :: Expr Name -> Expr (Unique Name)
+--enumerateExpr = snd . go 0
+  --where
+    --go :: Int -> Expr Name -> (Int, Expr (Unique Name))
+    --go n (Application a b) = (n'',Application a' b')
+      --where
+        --(n',a') = go n a
+        --(n'',b') = go n' b
+    --go n (Lambda b e) = let (n',e') = go (succ n) e in (n', Lambda (Unique n b) e')
+    --go n (PolyLambda b e) = let (n',e') = go (succ n) e in (n', PolyLambda (Unique n b) e')
+    --go n (ForAll b e) = let (n',e') = go (succ n) e in (n', ForAll (Unique n b) e')
+    --go n (Variable v) = (succ n, Variable (Unique n v))
+    --go n (Literal v t) = let (n',t') = go n t in (n',Literal v t')
+    --go n LitArrow = (n,LitArrow)
 
+instance Traversable Expr where
+--traverse :: Applicative p => (a -> p b) -> Expr a -> p (Expr b)
+  traverse f expr = go expr
+    where
+      go (Application a b) = Application <$> go a <*> go b
+      go (Lambda b e) = Lambda <$> f b <*> go e
+      go (PolyLambda b e) = PolyLambda <$> f b <*> go e
+      go (ForAll b e) = ForAll <$> f b <*> go e
+      go (Variable v) = Variable <$> f v
+      go (Literal v t) = Literal v <$> go t
+      go LitArrow = pure LitArrow
+
+enumerateExpr :: Expr Name -> Expr (Unique Name)
+enumerateExpr expr = evalState (go expr) 0
+  where
+    go (Application a b) = Application <$> go a <*> go b
+    go (Lambda b e) = Lambda <$> fresh b <*> go e
+    go (PolyLambda b e) = PolyLambda <$> fresh b <*> go e
+    go (ForAll b e) = ForAll <$> fresh b <*> go e
+    go (Variable v) = Variable <$> fresh v
+    go (Literal v t) = Literal v <$> go t
+    go LitArrow = pure LitArrow
+
+    fresh :: Name -> State Int (Unique Name)
+    fresh v = do
+      modify (+1) 
+      u <- get
+      return (Unique u v)
+      
+      
+
+lexicallyScopeExpr :: Expr (Unique Name) -> Expr (Unique Name)
+lexicallyScopeExpr expr = evalState (go expr) Map.empty
+  where
+    go (Application a b) = Application <$> go a <*> go b
+    go (Lambda u e) = Lambda <$> addName u <*> go e
+    go (PolyLambda u e) = PolyLambda <$> addName u <*> go e
+    go (ForAll u e) = ForAll <$> addName u <*> go e
+    go (Variable v) = Variable <$> addName v
+    go (Literal v t) = Literal v <$> go t 
+    go LitArrow = return LitArrow
+
+    addName :: Unique Name -> State (Map Name Int) (Unique Name)
+    addName (Unique u n) = do
+      m <- get
+      -- If the variable is in scope
+      case Map.lookup n m of
+        -- Then use the existing identifier with the original name
+        Just a -> return (Unique a n)
+        -- Otherwise, add the new identifier with its name and return it
+        Nothing -> modify (Map.insert n u) >> return (Unique u n)
+ 
 pattern Function from to <- Application (Application LitArrow from) to
 
 function :: SimpleExpr -> SimpleExpr -> SimpleExpr
