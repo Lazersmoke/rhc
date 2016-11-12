@@ -9,8 +9,7 @@ import qualified Data.Map as Map
 import Data.Map (Map)
 import Control.Monad.State.Lazy
 
-type SimpleExpr = Expr TypedName
-type ParsedExpr = Expr Name
+
 
 data Expr b
   = Application (Expr b) (Expr b)
@@ -40,8 +39,11 @@ instance Foldable Expr where
   foldMap f (Literal _ t) = foldMap f t
   foldMap _ LitArrow = mempty
 
+compileShow :: String -> IO ()
+compileShow = putStrLn . uniqueExpr . (\(Right a) -> a) . compile
+
 compile :: String -> Either ParseError (Expr (Unique Name))
-compile = (lexScopeIt . typeIt . enumIt <$>) . parseIt
+compile = (lexScopeIt . typeIt <$>) . parseIt
   where
     parseIt = parse parseExpr ""
     enumIt = enumerateExpr
@@ -54,13 +56,10 @@ lexeme = (<*(spaces<?>"Lexical Whitespace"))
 parseExpr :: Parser ParsedExpr
 parseExpr = chainl1 (lexeme realParse <?> "Expression") parseAppl <?> "Applicable Expression"
   where
-    realParse = parseParenExpr <|> parseLambda <|> parseVar
+    realParse = parseParenExpr <|> parseLambda <|> (Variable <$> parseName)
 
 parseParenExpr :: Parser ParsedExpr
 parseParenExpr = (lexeme (char '(') <?> "Open Paren") *> parseExpr <* (lexeme (char ')') <?> "Close Paren")
-
-parseVar :: Parser ParsedExpr
-parseVar = Variable <$> parseName <?> "Variable"
 
 parseAppl :: Parser (Expr a -> Expr a -> Expr a)
 parseAppl = pure Application
@@ -109,16 +108,8 @@ instance Traversable Expr where
       go LitArrow = pure LitArrow
 
 enumerateExpr :: Expr Name -> Expr (Unique Name)
-enumerateExpr expr = evalState (go expr) 0
+enumerateExpr expr = evalState (traverse fresh expr) 0
   where
-    go (Application a b) = Application <$> go a <*> go b
-    go (Lambda b e) = Lambda <$> fresh b <*> go e
-    go (PolyLambda b e) = PolyLambda <$> fresh b <*> go e
-    go (ForAll b e) = ForAll <$> fresh b <*> go e
-    go (Variable v) = Variable <$> fresh v
-    go (Literal v t) = Literal v <$> go t
-    go LitArrow = pure LitArrow
-
     fresh :: Name -> State Int (Unique Name)
     fresh v = do
       modify (+1) 
@@ -126,28 +117,58 @@ enumerateExpr expr = evalState (go expr) 0
       return (Unique u v)
       
       
+-- \x -> (\x -> x) x
+--  1      2    2  1
+--
+-- \a -> (\a -> a)
+--  1      2    2
 
-lexicallyScopeExpr :: Expr (Unique Name) -> Expr (Unique Name)
-lexicallyScopeExpr expr = evalState (go expr) Map.empty
+data LexicalError = UndeclaredVariable String deriving (Eq,Show)
+
+lexicallyScopeExpr :: ParsedExpr -> Expr (Unique Name)
+lexicallyScopeExpr expr = evalState (go Map.empty expr) 0
   where
-    go (Application a b) = Application <$> go a <*> go b
-    go (Lambda u e) = Lambda <$> addName u <*> go e
-    go (PolyLambda u e) = PolyLambda <$> addName u <*> go e
-    go (ForAll u e) = ForAll <$> addName u <*> go e
-    go (Variable v) = Variable <$> addName v
-    go (Literal v t) = Literal v <$> go t 
-    go LitArrow = return LitArrow
+    go :: Map Name Int -> Expr Name -> State Int (Expr (Unique Name))
+    -- for Applications, do the first, then the second
+    go m (Application a b) = Application <$> go m a <*> go m b
+    -- for Lambdas, push the new variable in, then pop it out afterward (don't save m')
+    go m (Lambda b e) = do
+      u <- fresh
+      Lambda (Unique u b) <$> (go (Map.insert b u m) e) 
+    go m (PolyLambda b e) = do
+      u <- fresh
+      PolyLambda (Unique u b) <$> (go (Map.insert b u m) e)
+    go m (ForAll b e) = do
+      u <- fresh
+      ForAll (Unique u b) <$> (go (Map.insert b u m) e)
+    go m (Variable v) = do
+      case Map.lookup v m of
+        Just a -> return $ Variable (Unique a v)
+        Nothing -> error $ show $ UndeclaredVariable (show v)
+    go m (Literal v t) = Literal v <$> go m t
+    go m LitArrow = pure LitArrow
 
-    addName :: Unique Name -> State (Map Name Int) (Unique Name)
-    addName (Unique u n) = do
-      m <- get
-      -- If the variable is in scope
-      case Map.lookup n m of
-        -- Then use the existing identifier with the original name
-        Just a -> return (Unique a n)
-        -- Otherwise, add the new identifier with its name and return it
-        Nothing -> modify (Map.insert n u) >> return (Unique u n)
- 
+    fresh :: State Int Int
+    fresh = do
+      modify (+1)
+      get
+
+    --addName :: Name -> State (Map Name Int) (Unique Name)
+    --addName (BindContext n) = do
+      --newId <- (+1) . safeMax . Map.elems <$> get
+      --modify (Map.insert n newId)
+      --return (Unique newId n)
+    --addName (UseContext n) = do
+      --m <- get
+      ---- If it is bound so far
+      --case Map.lookup n m of
+        -- Use it
+        --Just a -> return $ Unique a n
+        -- Otherwise, throw a fit
+        --Nothing -> error $ "Unbound Variable: " ++ show n
+    safeMax [] = -1
+    safeMax a = maximum a
+       
 pattern Function from to <- Application (Application LitArrow from) to
 
 function :: SimpleExpr -> SimpleExpr -> SimpleExpr
@@ -196,6 +217,9 @@ data Unique a = Unique {-Unique-}Int a deriving Show
 data Typed a = Typed {-Type-}SimpleExpr a deriving (Show,Eq)
 
 type TypedName = Typed (Unique Name)
+
+type SimpleExpr = Expr TypedName
+type ParsedExpr = Expr Name
 
 typedName :: String -> Int -> SimpleExpr -> TypedName
 typedName s u t = Typed t (Unique u s)
