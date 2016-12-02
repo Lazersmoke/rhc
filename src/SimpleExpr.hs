@@ -107,6 +107,16 @@ instance Traversable Expr where
       go (Literal v t) = Literal v <$> go t
       go LitArrow = pure LitArrow
 
+inlineExpr :: Eq b => b -> Expr b -> Expr b -> Expr b
+inlineExpr n beta (Application a b) = Application (inlineExpr n beta a) (inlineExpr n beta b) 
+inlineExpr n beta (Lambda bind e) = Lambda bind (inlineExpr n beta e)
+inlineExpr n beta (PolyLambda bind e) = PolyLambda bind (inlineExpr n beta e)
+inlineExpr n beta (ForAll bind e) = ForAll bind (inlineExpr n beta e)
+inlineExpr n beta (Variable v) = if n == v then beta else Variable v
+inlineExpr n beta (Literal v t) = Literal v (inlineExpr n beta t)
+inlineExpr _ _ LitArrow = LitArrow
+
+-- Label every binder in increasing order
 enumerateExpr :: Expr Name -> Expr (Unique Name)
 enumerateExpr expr = evalState (traverse fresh expr) 0
   where
@@ -115,7 +125,6 @@ enumerateExpr expr = evalState (traverse fresh expr) 0
       modify (+1) 
       u <- get
       return (Unique u v)
-      
       
 -- \x -> (\x -> x) x
 --  1      2    2  1
@@ -141,34 +150,19 @@ lexicallyScopeExpr expr = evalState (go Map.empty expr) 0
     go m (ForAll b e) = do
       u <- fresh
       ForAll (Unique u b) <$> (go (Map.insert b u m) e)
+    -- For variables, check if the Variable is in scope, and use the created Id if it is. Otherwise, error out immediatley
     go m (Variable v) = do
       case Map.lookup v m of
         Just a -> return $ Variable (Unique a v)
         Nothing -> error $ show $ UndeclaredVariable (show v)
+    -- Literal Values are not affected by scope
     go m (Literal v t) = Literal v <$> go m t
+    -- Literal Arrows are not affected by scope
     go m LitArrow = pure LitArrow
 
     fresh :: State Int Int
-    fresh = do
-      modify (+1)
-      get
+    fresh = const <$> get <*> modify (+1)
 
-    --addName :: Name -> State (Map Name Int) (Unique Name)
-    --addName (BindContext n) = do
-      --newId <- (+1) . safeMax . Map.elems <$> get
-      --modify (Map.insert n newId)
-      --return (Unique newId n)
-    --addName (UseContext n) = do
-      --m <- get
-      ---- If it is bound so far
-      --case Map.lookup n m of
-        -- Use it
-        --Just a -> return $ Unique a n
-        -- Otherwise, throw a fit
-        --Nothing -> error $ "Unbound Variable: " ++ show n
-    safeMax [] = -1
-    safeMax a = maximum a
-       
 pattern Function from to <- Application (Application LitArrow from) to
 
 function :: SimpleExpr -> SimpleExpr -> SimpleExpr
@@ -324,24 +318,30 @@ getTypes e = e : case getType e of
   Right typ -> getTypes typ
   Left _ -> []
 
+addType :: Expr (Unique Name) -> Either TypeError SimpleExpr
+addType (Application appA appB) = Application <$> addType appA <*> addType appB
+addType (Lambda b e) = Lambda <$> 
+
+
 printTypes :: SimpleExpr -> IO ()
 printTypes = mapM_ print . getTypes
 
-substitute :: TypedName -> TypedName -> SimpleExpr -> SimpleExpr
-substitute f r (Application a b) = Application (substitute f r a) (substitute f r b)
-substitute f r (Lambda b@(Typed t (Unique u s)) e) = 
-  Lambda 
-    (if b == f then r else typedName s u (substitute f r t)) 
-    (substitute f r e)
-substitute f r (Variable v@(Typed t (Unique u s))) = 
-  if v == f 
-    then Variable r 
-    else Variable (typedName s u (substitute f r t))
-substitute _ _ l@(Literal _ _) = l
-substitute _ _ LitArrow = LitArrow
+--substitute :: TypedName -> TypedName -> SimpleExpr -> SimpleExpr
+--substitute f r (Application a b) = Application (substitute f r a) (substitute f r b)
+--substitute f r (Lambda b@(Typed t (Unique u s)) e) = 
+  --Lambda 
+    --(if b == f then r else typedName s u (substitute f r t)) 
+   -- (substitute f r e)
+--substitute f r (Variable v@(Typed t (Unique u s))) = 
+ -- if v == f 
+  --  then Variable r 
+   -- else Variable (typedName s u (substitute f r t))
+--substitute _ _ l@(Literal _ _) = l
+--substitute _ _ LitArrow = LitArrow
 
-betaReduce :: SimpleExpr -> SimpleExpr
-betaReduce d@(Application (Lambda b e) (Variable beta)) = case getType d of
-  Left e -> d
-  Right _ -> substitute b beta e
+betaReduce :: Eq b => Expr b -> Expr b
+betaReduce (Application (Lambda b e) beta) = inlineExpr b beta e
 betaReduce x = x
+
+
+
